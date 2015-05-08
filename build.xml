@@ -149,16 +149,7 @@
             </classpath>
         </javac>
 
-        	<copy todir="${build}/">
-
-        				<fileset dir="resources">
-
-        					<include name="*.txt" />
-
-
-        				</fileset>
-        				
-        			</copy>
+        	
     	
         <jar
             basedir="${build}"
