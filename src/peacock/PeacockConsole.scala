@@ -28,7 +28,7 @@ object PeacockConsole {
         case "help" => listInstructions
         
         case "spoligotype" => LorikeetFigure.main(args.drop(1))
-        case "pre-genotype-phenotype" => SplitGenoPheno.main(args.drop(1))
+        case "prep-genotype-phenotype" => SplitGenoPheno.main(args.drop(1))
         case "genotype-phenotype-details" => MutsAPKnownDRgenes.main(args.drop(1))
         case "phenotype-mutation-overlay" => MutsAP.main(args.drop(1))
         case "cclm-matrix" => CCLM2matrix.main(args.drop(1))
