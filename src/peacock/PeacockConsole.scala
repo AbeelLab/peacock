@@ -36,6 +36,7 @@ object PeacockConsole {
         case "prep-hawk" => HawkPrepare.main(args.drop(1))
         case "dual" => DualTreeMatrixViz.main(args.drop(1))
         case "magic" => EverythingFigure.main(args.drop(1))
+        case "tree" => EverythingFigure.main(args.drop(1))
         case "radial" => RadialEverythingFigure.main(args.drop(1))
         case "mic-table" => MICfigure.main(args.drop(1))
         case "_" => listInstructions
@@ -48,6 +49,16 @@ object PeacockConsole {
     println("Usage:java -jar peacock.jar [instruction] [instruction options...]")
     println("Instructions:")
     
+
+    
+    println("\ttree                         Tree visualization program")
+    println("\tdual                         Dual tree matrix visualization")
+    println("\tradial                       Radial tree visualization")
+    println("")
+    println("")
+    println("")
+    println("\t*** UNSUPPORTED TOOLS ***")
+    println("\tmic-table                    Generate a table view with MIC values, detailed mutations and DST information.")
     println("\tspoligotype                  Spoligotype visualizations")
     println("")
     println("")
@@ -64,12 +75,7 @@ object PeacockConsole {
     println("")
     println("\tprep-hawk                    Prepare images for Hawk visualization")
     println("")
-    println("\tdual                         Dual tree matrix visualization")
-    println("")
-    println("\tmagic                        Undocumented program that does stuff.")
-    println("\tradial                       Another undocumented program that does radial stuff.")
-    println("\t")
-    println("\tmic-table                    Generate a table view with MIC values, detailed mutations and DST information.")
+    
 
   }
 
