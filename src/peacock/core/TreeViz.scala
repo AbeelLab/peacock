@@ -57,7 +57,7 @@ class TreeViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], 
 
   override def setup() {
     
-    val lineageX=if(lineage!=null && lineageColoring)tMap(tLines(lineage),keyColumn=0,valueColumn=3,limitSplit=false)else Map.empty[String,String]
+    val lineageX=if(lineage!=null && lineageColoring)tMap(tLines(lineage),keyColumn=1,valueColumn=2,limitSplit=false)else Map.empty[String,String]
     
     val treep = new TreePImage(tree, treeWidth, labels, vignets,highlights,lineageX);
     val factor=PGraphicsPDF.RESCALE_FACTOR
