@@ -16,11 +16,11 @@ import peacock.vignets.BinaryVignets
 
 object RadialEverythingFigure extends Tool {
 
-  override val version="""
+  override val version = """
     pre 2015:        Initial version used for TB-ARC work, including later improvements such as lineage coloring
     2015/01/09       Fix NPE when not providing lineage information
     """
-  
+
   case class Config(
     val moreLabels: Seq[File] = Seq(),
     val moreFields: Seq[String] = Seq(),
@@ -35,16 +35,15 @@ object RadialEverythingFigure extends Tool {
     val highlightFile: File = null,
     val category: Seq[File] = Seq(),
     val categoryCoding: File = null,
-    val categorySplit:Boolean=false,
-    val figureSize:Int=1600
-  )
+    val categorySplit: Boolean = false,
+    val figureSize: Int = 1600)
 
   def main(args: Array[String]): Unit = {
 
     val parser = new scopt.OptionParser[Config]("java -jar peacock.jar radial") {
       /* Output prefix */
       opt[String]('o', "output") required () action { (x, c) => c.copy(outputPrefix = x) } text ("File prefix for the output files.")
-      
+
       opt[Int]("size") action { (x, c) => c.copy(figureSize = x) } text ("Canvas size for figure, default 1600 units")
 
       /* Phylogenetic tree */
@@ -53,7 +52,7 @@ object RadialEverythingFigure extends Tool {
       /* Labeling information */
       opt[File]("pgg") action { (x, c) => c.copy(pgg = x) } text ("File containing principal genetic group information.")
       opt[File]("lineage") action { (x, c) => c.copy(lineage = x) } text ("File containing lineage information, by default this is generated from the spoligotype.")
-      
+
       /* Genotype-phenotype figure */
       opt[File]("phenotype") action { (x, c) => c.copy(pheno = x) } text ("File containing the phenotypes in matrix format")
       opt[File]("genotype") action { (x, c) => c.copy(geno = x) } text ("File containing the genotypes in matrix format (can be omitted, even when pheno is present).")
@@ -61,7 +60,7 @@ object RadialEverythingFigure extends Tool {
 
       /* Matrices and column text */
       opt[File]("extra") unbounded () action { (x, c) => c.copy(moreLabels = c.moreLabels :+ x) } text ("Additional labels. Each file should be key\tvalues")
-//      opt[String]("field") unbounded () action { (x, c) => c.copy(moreFields = c.moreFields :+ x) } text ("Additional field values to extract from Manhattan.")
+      //      opt[String]("field") unbounded () action { (x, c) => c.copy(moreFields = c.moreFields :+ x) } text ("Additional field values to extract from Manhattan.")
 
       /*
        * AP 
@@ -84,7 +83,7 @@ object RadialEverythingFigure extends Tool {
 
       val tree = new Tree(config.tree)
 
-      val highlights = if (config.highlightFile != null) tLines(config.highlightFile)/*.map(GNumbers.singleG(_))*/ else List.empty[String]
+      val highlights = if (config.highlightFile != null) tLines(config.highlightFile) /*.map(GNumbers.singleG(_))*/ else List.empty[String]
 
       val labels = new LabelGenerator
 
@@ -111,14 +110,13 @@ object RadialEverythingFigure extends Tool {
         println("Sorted: " + sorted)
 
         //      System.exit(0)
-        val pgVignets = new PhenotypeGenotypeVignets(config.pheno, config.geno, sorted,true)
+        val pgVignets = new PhenotypeGenotypeVignets(config.pheno, config.geno, sorted, true)
         vignetList = vignetList :+ pgVignets
         freeformList = freeformList :+ pgVignets.pgLegend
       }
       /**
        * Text matrices and extra text fields
        */
-
 
       config.moreLabels.toList.map { file =>
         val mapping = tMap(tLines(file))
@@ -131,12 +129,21 @@ object RadialEverythingFigure extends Tool {
       }
 
       config.category.toList.map { file =>
-        
+
         val dataMap = tMap(tLines(file))
-        vignetList = vignetList :+ new CategoryVignets(dataMap, config.categoryCoding,45,15)
+
+        if (config.categorySplit) {
+          val keys=dataMap.values.toList.toSet
+          for(key<-keys){
+            val subMap=dataMap.filter(_._2.equals(key))
+            vignetList = vignetList :+ new CategoryVignets(subMap, config.categoryCoding, 45, 15)
+          }
+        } else {
+          vignetList = vignetList :+ new CategoryVignets(dataMap, config.categoryCoding, 45, 15)
+        }
       }
-     
-      RadialViz.make(tree, treeWidth = config.figureSize, freeForm = freeformList.toList, labels = List(new LabelGenerator, labels), vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacockR.magic.", highlights = highlights,lineage=config.lineage)
+
+      RadialViz.make(tree, treeWidth = config.figureSize, freeForm = freeformList.toList, labels = List(new LabelGenerator, labels), vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacockR.magic.", highlights = highlights, lineage = config.lineage)
 
     }
 
