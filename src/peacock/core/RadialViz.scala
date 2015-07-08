@@ -69,12 +69,13 @@ class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator]
     pdf.rect(-1, -1, treep.totalWidth + 2, treep.totalHeight + 2)
     pdf.fill(0)
     treep.render(pdf);
+   
     freeForm.map(f => {
       pdf.pushMatrix()
       f.drawFreeForm(pdf)
       pdf.popMatrix()
     })
-
+  
     pdf.nextPage()
     pdf.scale(1 / factor)
     val text = List("RadialViz, a Peacock visualization (C) Thomas Abeel") ++ generatorInfo.split("\n") ++ labels.map(_.toString) ++ vignets.map(_.toString) ++ freeForm.map(_.toString()) ++ List("highlights: " + highlights.mkString(","), "export: " + exportPrefix)

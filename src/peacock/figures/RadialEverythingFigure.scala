@@ -5,6 +5,8 @@ import java.io.File
 import atk.compbio.tree.Tree
 import peacock.core.LabelGenerator
 import atk.util.Tool
+import atk.util.ColorTools
+import atk.util.ColorPalette
 import peacock.vignets.PhenotypeGenotypeVignets
 import peacock.vignets.CategoryVignets
 import peacock.core.RadialViz
@@ -13,6 +15,7 @@ import peacock.core.FreeFormAddition
 import peacock.vignets.TextVignets
 import peacock.core.LabelGenerator
 import peacock.vignets.BinaryVignets
+import peacock.freeform.CategoryRadialLegend
 
 object RadialEverythingFigure extends Tool {
 
@@ -133,15 +136,37 @@ object RadialEverythingFigure extends Tool {
 
         val dataMap = tMap(tLines(file))
 
+        val colorMap = if (config.categoryCoding != null) {
+          assume(config.categoryCoding.exists())
+          tMap(tLines(config.categoryCoding)).mapValues(f => {
+            //      val arr = f.split("\t")
+            ColorTools.decodeColor(f)
+            //      assume(arr.size==3,"Incorrect number of values for RGB: "+arr.toList)
+            //      new Color(arr(0).toInt, arr(1).toInt, arr(2).toInt)
+          })
+        } else {
+          val list = dataMap.values.toSet.toList
+          (for (key <- list.zipWithIndex) yield {
+            key._1 -> ColorPalette(key._2)
+          }).toMap
+
+        }
+
         if (config.categorySplit) {
-          val keys=dataMap.values.toList.toSet
-          for(key<-keys){
-            val subMap=dataMap.filter(_._2.equals(key))
-            vignetList = vignetList :+ new CategoryVignets(subMap, config.categoryCoding, 45, 15)
+          val keys = dataMap.values.toList.toSet
+          for (key <- keys) {
+            val subMap = dataMap.filter(_._2.equals(key))
+            vignetList = vignetList :+ new CategoryVignets(subMap, colorMap, 45, 15)
           }
         } else {
-          vignetList = vignetList :+ new CategoryVignets(dataMap, config.categoryCoding, 45, 15)
+          vignetList = vignetList :+ new CategoryVignets(dataMap, colorMap, 45, 15)
+
         }
+        val usedColors = colorMap.filter(pair => dataMap.values.toSet.contains(pair._1))
+
+        
+        freeformList = freeformList :+ new CategoryRadialLegend(usedColors)
+
       }
 
       RadialViz.make(tree, treeWidth = config.figureSize, freeForm = freeformList.toList, labels = List(new LabelGenerator, labels), vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacockR.magic.", highlights = highlights, lineage = config.lineage)

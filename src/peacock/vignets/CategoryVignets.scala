@@ -12,29 +12,19 @@ import java.awt.Color
 import peacock.support.PTools
 import atk.util.ColorTools
 
-class CategoryVignets(val dataMap: Map[String,String], val categoryCoding: File, val width:Int=12,val height:Int=12) extends VignetMaker with Lines {
+object CategoryVignets{
+  var usedLegendLines=0
+}
+
+class CategoryVignets(val dataMap: Map[String,String], val colorMap: Map[String,Color], val width:Int=12,val height:Int=12) extends VignetMaker with Lines {
 
  
 
   override def toString() ={
-    "CategoryVignet:\n\tcategory="+dataMap.take(2).toString+"\n\tcoding="+categoryCoding
+    "CategoryVignet:\n\tcategory="+dataMap.take(2).toString+"\n\tcoding="+colorMap
   }
   
-  val colorMap = if (categoryCoding != null) {
-    assume(categoryCoding.exists())
-    tMap(tLines(categoryCoding)).mapValues(f => {
-//      val arr = f.split("\t")
-      ColorTools.decodeColor(f)
-//      assume(arr.size==3,"Incorrect number of values for RGB: "+arr.toList)
-//      new Color(arr(0).toInt, arr(1).toInt, arr(2).toInt)
-    })
-  } else {
-    val list = dataMap.values.toSet.toList
-    (for (key <- list.zipWithIndex) yield {
-      key._1 -> ColorPalette(key._2)
-    }).toMap
-
-  }
+  
   val defaultColor=colorMap.getOrElse("default", Color.LIGHT_GRAY)
   val missingColor=colorMap.getOrElse("missing", Color.WHITE)
 
@@ -46,6 +36,7 @@ class CategoryVignets(val dataMap: Map[String,String], val categoryCoding: File,
   override def header(buf: PGraphics) {
     buf.pushMatrix()
     buf.translate(0,20)
+    //FIXME only include used colors
     for (pk <- colorMap) {
       val c = pk._2
       buf.fill(buf.color(c.getRed(), c.getGreen(), c.getBlue()))
