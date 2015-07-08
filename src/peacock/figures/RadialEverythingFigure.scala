@@ -19,6 +19,7 @@ object RadialEverythingFigure extends Tool {
   override val version = """
     pre 2015:        Initial version used for TB-ARC work, including later improvements such as lineage coloring
     2015/01/09       Fix NPE when not providing lineage information
+    2015/07/08       Added option to split categorical data in circles
     """
 
   case class Config(
