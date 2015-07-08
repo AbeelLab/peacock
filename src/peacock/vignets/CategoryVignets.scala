@@ -12,12 +12,12 @@ import java.awt.Color
 import peacock.support.PTools
 import atk.util.ColorTools
 
-class CategoryVignets(val category: File, val categoryCoding: File, val width:Int=12,val height:Int=12) extends VignetMaker with Lines {
+class CategoryVignets(val dataMap: Map[String,String], val categoryCoding: File, val width:Int=12,val height:Int=12) extends VignetMaker with Lines {
 
-  val dataMap = tMap(tLines(category))
+ 
 
   override def toString() ={
-    "CategoryVignet:\n\tcategory="+category+"\n\tcoding="+categoryCoding
+    "CategoryVignet:\n\tcategory="+dataMap.take(2).toString+"\n\tcoding="+categoryCoding
   }
   
   val colorMap = if (categoryCoding != null) {

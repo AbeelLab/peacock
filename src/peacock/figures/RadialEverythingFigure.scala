@@ -35,6 +35,7 @@ object RadialEverythingFigure extends Tool {
     val highlightFile: File = null,
     val category: Seq[File] = Seq(),
     val categoryCoding: File = null,
+    val categorySplit:Boolean=false,
     val figureSize:Int=1600
   )
 
@@ -72,6 +73,7 @@ object RadialEverythingFigure extends Tool {
        */
       opt[File]("category") unbounded () action { (x, c) => c.copy(category = c.category :+ x) } text ("Categorical values")
       opt[File]("category-coding") action { (x, c) => c.copy(categoryCoding = x) } text ("Categorical color coding")
+      opt[Unit]("category-split") action { (x, c) => c.copy(categorySplit = true) } text ("Split each category in a distinct circle")
 
       /*
          * Sample highlight
@@ -129,7 +131,9 @@ object RadialEverythingFigure extends Tool {
       }
 
       config.category.toList.map { file =>
-        vignetList = vignetList :+ new CategoryVignets(file, config.categoryCoding,45,15)
+        
+        val dataMap = tMap(tLines(file))
+        vignetList = vignetList :+ new CategoryVignets(dataMap, config.categoryCoding,45,15)
       }
      
       RadialViz.make(tree, treeWidth = config.figureSize, freeForm = freeformList.toList, labels = List(new LabelGenerator, labels), vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacockR.magic.", highlights = highlights,lineage=config.lineage)

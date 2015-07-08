@@ -165,8 +165,8 @@ object EverythingFigure extends Tool {
       config.multiFile.toList.map {
         _ match {
           case ("category", x) =>
-
-            vignetList = vignetList :+ new CategoryVignets(x, config.categoryCoding)
+          	 val dataMap = tMap(tLines(x))
+            vignetList = vignetList :+ new CategoryVignets(dataMap, config.categoryCoding)
 
           case ("label", x) =>
 
