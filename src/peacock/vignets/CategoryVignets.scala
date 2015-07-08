@@ -36,6 +36,7 @@ class CategoryVignets(val dataMap: Map[String,String], val categoryCoding: File,
 
   }
   val defaultColor=colorMap.getOrElse("default", Color.LIGHT_GRAY)
+  val missingColor=colorMap.getOrElse("missing", Color.WHITE)
 
   override def y() = { height }
   override def x() = { width+2 /*+ (colorMap.keys.toList.map(f => PTools.textWidth(f)).max).toInt */}
@@ -67,7 +68,7 @@ class CategoryVignets(val dataMap: Map[String,String], val categoryCoding: File,
 
     val l = dataMap.getOrElse(key, "missing")
 
-    val c = colorMap.getOrElse(l, defaultColor)
+    val c = if(!dataMap.contains(key))missingColor else colorMap.getOrElse(l, defaultColor)
     buf.fill(buf.color(c.getRed(), c.getGreen(), c.getBlue()))
 
     buf.rect(0, 0, width-1, height-1)
