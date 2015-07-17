@@ -9,7 +9,7 @@ import atk.compbio.tree.TreeNode
 import java.io.File
 import atk.util.ColorTools
 
-class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String], val lineage: Map[String, String] = Map.empty[String, String]) extends PRender with CoreConfig {
+class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String], val lineage: Map[String, String] = Map.empty[String, String], val clusters: Map[String, List[String]] = Map.empty[String, List[String]]) extends PRender with CoreConfig {
 
   val vignets = if (inputVignets.size == 0) List(new VignetMaker) else inputVignets
 
@@ -19,14 +19,15 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
   val maxH = vignets.map(f => f.y).max
 
   println("maxH: " + maxH)
-  val totalWidth = vignets.map(f => f.x).sum + treeWidth + 5
+  val clusterWidth = if (clusters.isEmpty) 0 else clusters.head._2.size * 30 + 4
+  val totalWidth = vignets.map(f => f.x).sum + treeWidth + clusterWidth + 5
   val maxHeader = vignets.map(f => f.headerHeight).max
   val maxFooter = vignets.map(f => f.footerHeight).max
-  val totalHeight = maxH * totalChildren + maxHeader + maxFooter + 5
+  val totalHeight = maxH * totalChildren + maxHeader + maxFooter + 12
 
   println("TW = " + totalWidth)
 
-  
+
 
   override def render(buf: PGraphics) {
     render(buf, false)
@@ -74,6 +75,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
     buf.pushMatrix()
     buf.translate(0, maxHeader)
 
+
     /**
      * Returns center Y of subtrees
      */
@@ -93,10 +95,29 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
         }
       }
       
-      setColor
+      def drawClusters() {
+        if (!clusters.isEmpty) {
+          val clusterLevels = clusters(node.getName)
+          var x = treeWidth + 5
+          def recursiveClusters(ls: List[String]): Unit = ls match {
+            case head :: tail => {
+              val c = clusterColorMap(head)
+              buf.fill(c.getRed, c.getGreen, c.getBlue)
+              buf.stroke(c.getRed, c.getGreen, c.getBlue)
+              buf.rect(x, yOffset + 2, 25, 12) // Colored bar indicating cluster
+              x = x + 30
+              recursiveClusters(tail)
+            }
+            case Nil => 
+          }
+          recursiveClusters(clusterLevels)
+        }
+      }
       
+      setColor // Removing this line does not change anything?
+            
       val cc = node.children
-      if (cc.size() == 0) {
+      if (cc.size() == 0) {//If leave node
 
         buf.line(x.toInt, yOffset + maxH / 2, (x + node.weight * xMultiplier).toInt, yOffset + maxH / 2)
         buf.stroke(buf.color(190, 190, 190))
@@ -105,10 +126,11 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
         buf.stroke(buf.color(0))
 
         buf.pushMatrix()
-        setColor
+        //setColor 
         labels.map(labelGen => {
           val txt = labelGen.label(node.getName())
           buf.pushMatrix()
+          drawClusters
           buf.translate(treeWidth - maxTextWidth, yOffset + maxH / 2)
           if (highlights.contains(node.getName())) {
             buf.fill(buf.color(255, 153, 153))
@@ -119,6 +141,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
 
           if (mirrorText)
             buf.scale(1, -1)
+          setColor //Sets lineage colors of txt
           buf.text(txt, 0, (buf.textSize) / 2)
           buf.popMatrix()
           buf.translate(buf.textWidth(txt) + 2, 0)
@@ -131,7 +154,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
           buf.pushMatrix()
           //          val img = vm.image(applet, node.getName)
           buf.translate(treeWidth, yOffset + 2)
-          println("drawing: " + node.getName() + " " + treeWidth + ", " + yOffset + 2)
+          //println("drawing: " + node.getName() + " " + treeWidth + ", " + yOffset + 2)
           vm.image(buf, node.getName)
           //          buf.image(img, treeWidth, yOffset + 2)
           buf.popMatrix()
@@ -142,7 +165,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
 
         yOffset + maxH / 2
 
-      } else {
+      } else { //if not a leave node
 
         val childrens = cc.map(tree.getLeaves(_).size)
 

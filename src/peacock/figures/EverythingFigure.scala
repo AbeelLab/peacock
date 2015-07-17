@@ -37,7 +37,9 @@ object EverythingFigure extends Tool {
     val highlightFile: File = null,
     val labelFlag: Boolean = true,
     val categoryCoding: File = null,
-    val debugLabels:Boolean=false
+    val debugLabels:Boolean=false,
+    val bootstrapvalues: Boolean = false,
+    val clusters: File = null
   )
 
   private val colorMap = List("LongDeletion" -> new Color(228, 26, 28), "LongInsertion" -> new Color(55, 126, 184),
@@ -112,9 +114,17 @@ object EverythingFigure extends Tool {
       /*
          * Sample highlight
          */
-      opt[File]("highlight-file") action { (x, c) => c.copy(highlightFile = x) } text ("Highlight the samples that occur in this file")
+      opt[File]("highlight-file") action { (x, c) => c.copy(highlightFile = x) } text ("Highlight the samples that occur in this file.")
       
+      /*
+       * Bootstrap values
+       */
+      opt[Unit]("bootstrap-values") action { (x, c) => c.copy(bootstrapvalues = true) } text ("File contains bootstrap values.")
       
+      /*
+       * Add cluster file
+       */
+      opt[File]("clusters") action { (x, c) => c.copy(clusters = x) } text ("File containing HierBAPS clusters")
       
       /**
        * Debug options
@@ -212,9 +222,9 @@ object EverythingFigure extends Tool {
       if(config.debugLabels)
     	  List(new LabelGenerator)++labelListX1
     	  else labelListX1
-      
-            
-      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights,lineage=config.lineage,lineageColoring=(!config.disableLineageColoring))
+     
+       
+      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring), bootstrap = config.bootstrapvalues, clusters = config.clusters)
 
       
     }
