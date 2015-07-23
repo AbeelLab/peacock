@@ -8,8 +8,10 @@ import processing.core.PGraphics
 import processing.core.PConstants
 import peacock.support.PTools
 //val tmpMatrix = tMap(tLines(matrixFile))
-class TextVignets(headerLabels: List[String], matrixFile: Map[String, String]) extends VignetMaker with Lines {
+class TextVignets(headerLabels: List[String], matrixFile: Map[String, String],highlights:List[String]=List.empty[String]) extends VignetMaker with Lines {
 
+  val fontSizeMultiplier=1.7f
+  
   val extraSpacer = 5
   val matrix_in = matrixFile.mapValues(f => f.split("\t").toList)
   val maxLen = matrix_in.map(_._2.size).max
@@ -38,7 +40,7 @@ class TextVignets(headerLabels: List[String], matrixFile: Map[String, String]) e
   }
 
   val columnWidths = matrix.filterKeys(!_.contains("$$")).toList.map(_._2).transpose.map(row => {
-    row.map(cell => PTools.textWidth(cell)+extraSpacer).max
+    row.map(cell => (PTools.textWidth(cell)*fontSizeMultiplier)+extraSpacer).max
 
   })
 
@@ -48,6 +50,7 @@ class TextVignets(headerLabels: List[String], matrixFile: Map[String, String]) e
     assume(headerHeight > 0, "headerHeight is zero")
     //    val buf: PGraphics = applet.createGraphics(x, headerHeight); //createGraphics(890, yPixels);
     buf.pushMatrix()
+
 
     buf.fill(0)
     buf.stroke(0)
@@ -69,17 +72,25 @@ class TextVignets(headerLabels: List[String], matrixFile: Map[String, String]) e
   override def image(buf: PGraphics, key: String) {
     //    val buf: PGraphics = applet.createGraphics(x, y); //createGraphics(890, yPixels);
     buf.pushMatrix()
-    
+    val fIn=buf.textSize
+    buf.textSize(fontSizeMultiplier*fIn)
     val l = matrix.getOrElse(key, List("-"))
     //    buf.beginDraw
-    buf.fill(0)
-    buf.stroke(0)
+    if(highlights.contains(key)){
+    	buf.fill(255,0,0)
+    	buf.stroke(255,0,0)
+    }else{
+      buf.fill(0)
+      buf.stroke(0)
+    }
+    	
     //    buf.background(255)
     val zippy = l.zip(columnWidths)
     for (s <- zippy) {
       buf.text(s._1, 0, 10)
       buf.translate(s._2 , 0)
     }
+    buf.textSize(fIn)
     //    buf.endDraw()
     //    buf.get(0, 0, buf.width, buf.height);
 

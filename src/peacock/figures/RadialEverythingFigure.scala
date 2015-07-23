@@ -87,7 +87,7 @@ object RadialEverythingFigure extends Tool {
 
       val tree = new Tree(config.tree)
 
-      val highlights = if (config.highlightFile != null) tLines(config.highlightFile) /*.map(GNumbers.singleG(_))*/ else List.empty[String]
+      val highlights = if (config.highlightFile != null) tColumn(0,tLines(config.highlightFile)) /*.map(GNumbers.singleG(_))*/ else List.empty[String]
 
       val labels = new LabelGenerator
 
@@ -125,7 +125,7 @@ object RadialEverythingFigure extends Tool {
       config.moreLabels.toList.map { file =>
         val mapping = tMap(tLines(file))
         // println(mapping.toList.take(5))
-        vignetList = vignetList :+ new TextVignets(mapping.getOrElse("$$", "").split("\t").toList, mapping)
+        vignetList = vignetList :+ new TextVignets(mapping.getOrElse("$$", "").split("\t").toList, mapping,highlights)
       }
 
       if (config.binary != null) {
