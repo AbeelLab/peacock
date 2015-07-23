@@ -77,7 +77,6 @@ class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator]
     })
   
     pdf.nextPage()
-    pdf.scale(1 / factor)
     val text = List("RadialViz, a Peacock visualization (C) Thomas Abeel") ++ generatorInfo.split("\n") ++ labels.map(_.toString) ++ vignets.map(_.toString) ++ freeForm.map(_.toString()) ++ List("highlights: " + highlights.mkString(","), "export: " + exportPrefix)
 
     text.map(_.split("\n")).flatten.map { f =>
