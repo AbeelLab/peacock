@@ -39,7 +39,8 @@ object EverythingFigure extends Tool {
     val categoryCoding: File = null,
     val debugLabels:Boolean=false,
     val bootstrapvalues: Boolean = false,
-    val clusters: File = null
+    val clusters: File = null,
+    val clusterColoring: File = null
   )
 
   private val colorMap = List("LongDeletion" -> new Color(228, 26, 28), "LongInsertion" -> new Color(55, 126, 184),
@@ -124,7 +125,8 @@ object EverythingFigure extends Tool {
       /*
        * Add cluster file
        */
-      opt[File]("clusters") action { (x, c) => c.copy(clusters = x) } text ("File containing HierBAPS clusters")
+      opt[File]("clusters") action { (x, c) => c.copy(clusters = x) } text ("File containing cluster information")
+      opt[File]("cluster-colors") action { (x, c) => c.copy(clusterColoring = x) } text ("File containing cluster colors.")
       
       /**
        * Debug options
@@ -224,7 +226,7 @@ object EverythingFigure extends Tool {
     	  else labelListX1
      
        
-      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring), bootstrap = config.bootstrapvalues, clusters = config.clusters)
+      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring), bootstrap = config.bootstrapvalues, clusters = config.clusters, clusterColoring = config.clusterColoring)
 
       
     }

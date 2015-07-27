@@ -8,8 +8,9 @@ import atk.compbio.tree.Tree
 import atk.compbio.tree.TreeNode
 import java.io.File
 import atk.util.ColorTools
+import atk.util.Lines
 
-class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String], val lineage: Map[String, String] = Map.empty[String, String], val clusters: Map[String, List[String]] = Map.empty[String, List[String]]) extends PRender with CoreConfig {
+class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String], val lineage: Map[String, String] = Map.empty[String, String], val clusters: Map[String, List[String]] = Map.empty[String, List[String]], val clusterColoring: Map[String, String] = Map.empty[String, String]) extends PRender with CoreConfig {
 
   val vignets = if (inputVignets.size == 0) List(new VignetMaker) else inputVignets
 
@@ -24,11 +25,10 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
   val maxHeader = vignets.map(f => f.headerHeight).max
   val maxFooter = vignets.map(f => f.footerHeight).max
   val totalHeight = maxH * totalChildren + maxHeader + maxFooter + 12
-
+  val clusterColorMap = clusterColoring.mapValues(ColorTools.decodeColor(_))
   println("TW = " + totalWidth)
 
-
-
+  
   override def render(buf: PGraphics) {
     render(buf, false)
   }
@@ -154,7 +154,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
           buf.pushMatrix()
           //          val img = vm.image(applet, node.getName)
           buf.translate(treeWidth, yOffset + 2)
-          //println("drawing: " + node.getName() + " " + treeWidth + ", " + yOffset + 2)
+          println("drawing: " + node.getName() + " " + treeWidth + ", " + yOffset + 2)
           vm.image(buf, node.getName)
           //          buf.image(img, treeWidth, yOffset + 2)
           buf.popMatrix()
@@ -217,6 +217,6 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
     buf.popMatrix() //complete footer
 
     buf.popMatrix() //complete draw
-  }
+  }  
 
 }
