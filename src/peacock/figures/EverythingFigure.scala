@@ -39,7 +39,11 @@ object EverythingFigure extends Tool {
     val highlightFile: File = null,
     val labelFlag: Boolean = true,
     val categoryCoding: File = null,
-    val debugLabels: Boolean = false)
+    val debugLabels:Boolean=false,
+    val bootstrapvalues: Boolean = false,
+    val clusters: File = null,
+    val clusterColoring: File = null
+  )
 
   private val colorMap = List("LongDeletion" -> new Color(228, 26, 28), "LongInsertion" -> new Color(55, 126, 184),
     "LongSubstitution" -> new Color(77, 175, 74), "SingleDeletion" -> new Color(152, 78, 163), "SingleInsertion" -> new Color(255, 127, 0), "SingleSubstitution" -> new Color(255, 255, 51)).toMap
@@ -110,7 +114,20 @@ object EverythingFigure extends Tool {
       /*
          * Sample highlight
          */
-      opt[File]("highlight-file") action { (x, c) => c.copy(highlightFile = x) } text ("Highlight the samples that occur in this file")
+
+      opt[File]("highlight-file") action { (x, c) => c.copy(highlightFile = x) } text ("Highlight the samples that occur in this file.")
+      
+      /*
+       * Bootstrap values
+       */
+      opt[Unit]("bootstrap-values") action { (x, c) => c.copy(bootstrapvalues = true) } text ("File contains bootstrap values.")
+      
+      /*
+       * Add cluster file
+       */
+      opt[File]("clusters") action { (x, c) => c.copy(clusters = x) } text ("File containing cluster information")
+      opt[File]("cluster-colors") action { (x, c) => c.copy(clusterColoring = x) } text ("File containing cluster colors.")
+      
 
       /**
        * Debug options
@@ -218,12 +235,17 @@ object EverythingFigure extends Tool {
 
       val labelListX1 = if (config.labelFlag) List(labels) else List.empty[LabelGenerator]
 
-      val labelList =
-        if (config.debugLabels)
-          List(new LabelGenerator) ++ labelListX1
-        else labelListX1
 
-      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring))
+      val labelList=
+      if(config.debugLabels)
+    	  List(new LabelGenerator)++labelListX1
+    	  else labelListX1
+     
+       
+      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring), bootstrap = config.bootstrapvalues, clusters = config.clusters, clusterColoring = config.clusterColoring)
+
+
+//      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring))
 
     }
 

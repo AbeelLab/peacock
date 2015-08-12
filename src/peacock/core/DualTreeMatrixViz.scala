@@ -74,6 +74,7 @@ opt[Int]("gradient") action { (x, c) => c.copy(gradient = x) } text ("Set gradie
 class DualTreeMatrixViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: DualVignetMaker, val exportPrefix: String, val freeForm: List[FreeFormAddition]) extends PApplet with Tool {
 
   override def setup() {
+    
     val treep = new TreePImage(tree, treeWidth, labels, List.empty[VignetMaker]);
     val width = tree.getLeafCount() * vignets.x + treep.totalWidth
     val height = tree.getLeafCount() * vignets.y + treep.totalWidth
