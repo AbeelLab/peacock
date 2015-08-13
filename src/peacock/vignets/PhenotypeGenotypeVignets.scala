@@ -75,6 +75,12 @@ class PhenotypeGenotypeVignets(phenotypeMatrix: File, genotypeMatrix: File, orde
         g.text("Phenotype", 65, 10)
       }
 
+      
+      g.fill(0)
+      g.stroke(0)
+      g.text("Order (in->out): "+useOrder.map(_._1).mkString(", "), 50, 100,200,50000)
+      g.text("Missing data", 565, sl + 10)
+      
       g.stroke(g.color(255, 79, 0))
       g.fill(g.color(255, 79, 0))
       g.rect(350, 0, boxSize, boxSize)
@@ -172,13 +178,13 @@ class PhenotypeGenotypeVignets(phenotypeMatrix: File, genotypeMatrix: File, orde
       }
       if (genotypeMap.isEmpty) {
         if (radial)
-          buf.ellipse(idx * boxSize*2, 0+boxSize, boxSize, boxSize)
+          buf.ellipse(idx * boxSize * 2, 0 + boxSize/2, boxSize, boxSize)
         else
           buf.rect(idx * boxSize, 0, boxSize, boxSize)
 
       } else {
         if (radial)
-          buf.ellipse(idx * boxSize*2, 0+boxSize, boxSize, boxSize)
+          buf.ellipse(idx * boxSize * 2, 0 + boxSize/2, boxSize, boxSize)
         else
           buf.triangle(idx * boxSize, 0, idx * boxSize + boxSize, 0, idx * boxSize, boxSize)
       }
@@ -213,10 +219,10 @@ class PhenotypeGenotypeVignets(phenotypeMatrix: File, genotypeMatrix: File, orde
             buf.stroke(buf.color(200, 200, 200))
             blank += 1
         }
-        if(radial)
-          buf.ellipse(idx * boxSize*2, 0+boxSize, boxSize/2-2, boxSize/2-2)
+        if (radial)
+          buf.ellipse(idx * boxSize * 2, 0 + boxSize/2, boxSize / 2 - 2, boxSize / 2 - 2)
         else
-        buf.triangle(idx * boxSize + boxSize, 0, idx * boxSize + boxSize, boxSize, idx * boxSize, boxSize)
+          buf.triangle(idx * boxSize + boxSize, 0, idx * boxSize + boxSize, boxSize, idx * boxSize, boxSize)
         //      buf.rect(idx * yPixels, yPixels / 2, yPixels, yPixels / 2)
       }
       idx += 1
@@ -245,16 +251,19 @@ class PhenotypeGenotypeVignets(phenotypeMatrix: File, genotypeMatrix: File, orde
     //      buf.translate(2, 0)
     //
     //    }
-    if (disagree >= 3) {
-      buf.fill(buf.color(255, 0, 0))
-      buf.stroke(buf.color(255, 0, 0))
-    } else {
-      buf.fill(buf.color(100, 100, 100))
-      buf.stroke(buf.color(100, 100, 100))
+    if (!radial) {
+      if (disagree >= 3) {
+        buf.fill(buf.color(255, 0, 0))
+        buf.stroke(buf.color(255, 0, 0))
+      } else {
+        buf.fill(buf.color(100, 100, 100))
+        buf.stroke(buf.color(100, 100, 100))
+      }
+
+      buf.translate(10, 0)
+      //    pwDiscordant.println(GNumbers.singleG(gNumber) + "\t" + mName(GNumbers.singleG(gNumber)) + "\t" + agree + "\t" + disagree + "\t" + ambiguous + "\t" + blank)
+      buf.text(agree + " " + disagree + " " + ambiguous + " " + blank, idx * boxSize, boxSize)
     }
-    buf.translate(10, 0)
-    //    pwDiscordant.println(GNumbers.singleG(gNumber) + "\t" + mName(GNumbers.singleG(gNumber)) + "\t" + agree + "\t" + disagree + "\t" + ambiguous + "\t" + blank)
-    buf.text(agree + " " + disagree + " " + ambiguous + " " + blank, idx * boxSize, boxSize)
     //    buf.endDraw()
     //    buf.get(0, 0, buf.width, buf.height)
     //    buf.get(0, 0, buf.width, buf.height);
