@@ -17,6 +17,7 @@ import peacock.vignets.BinaryVignets
 import peacock.vignets.BarchartVignets
 import peacock.vignets.LSPVignets
 import peacock.vignets.ImageVignets
+import peacock.vignets.HeatMapVignet
 import java.awt.Color
 import peacock.support.CountPerTypePrep
 
@@ -39,11 +40,10 @@ object EverythingFigure extends Tool {
     val highlightFile: File = null,
     val labelFlag: Boolean = true,
     val categoryCoding: File = null,
-    val debugLabels:Boolean=false,
+    val debugLabels: Boolean = false,
     val bootstrapvalues: Boolean = false,
     val clusters: File = null,
-    val clusterColoring: File = null
-  )
+    val clusterColoring: File = null)
 
   private val colorMap = List("LongDeletion" -> new Color(228, 26, 28), "LongInsertion" -> new Color(55, 126, 184),
     "LongSubstitution" -> new Color(77, 175, 74), "SingleDeletion" -> new Color(152, 78, 163), "SingleInsertion" -> new Color(255, 127, 0), "SingleSubstitution" -> new Color(255, 255, 51)).toMap
@@ -62,7 +62,7 @@ object EverythingFigure extends Tool {
       2015/05/08	Support for LSP data from Emu
     				Removed Manhattan support
     				Removed Manhattan integrated tree labels
-    
+      2015/09/04    Added support for heat maps
       """
 
   def main(args: Array[String]): Unit = {
@@ -102,6 +102,10 @@ object EverythingFigure extends Tool {
       opt[File]("category-coding") action { (x, c) => c.copy(categoryCoding = x) } text ("Categorical color coding")
 
       /*
+       * Heatmap
+       */
+      opt[File]("heatmap") unbounded () action { (x, c) => c.copy(multiFile = c.multiFile :+ ("heatmap", x)) } text ("Heatmap matrix file with values [0,1]")
+      /*
        * CPT
        */
       opt[File]("cpt") unbounded () action { (x, c) => c.copy(multiFile = c.multiFile :+ ("cpt", x)) } text ("Count per type summary of a VCF file, created by the 'prep-cpt' command.")
@@ -116,18 +120,17 @@ object EverythingFigure extends Tool {
          */
 
       opt[File]("highlight-file") action { (x, c) => c.copy(highlightFile = x) } text ("Highlight the samples that occur in this file.")
-      
+
       /*
        * Bootstrap values
        */
       opt[Unit]("bootstrap-values") action { (x, c) => c.copy(bootstrapvalues = true) } text ("File contains bootstrap values.")
-      
+
       /*
        * Add cluster file
        */
       opt[File]("clusters") action { (x, c) => c.copy(clusters = x) } text ("File containing cluster information")
       opt[File]("cluster-colors") action { (x, c) => c.copy(clusterColoring = x) } text ("File containing cluster colors.")
-      
 
       /**
        * Debug options
@@ -201,6 +204,15 @@ object EverythingFigure extends Tool {
             // println(mapping.toList.take(5))
             vignetList = vignetList :+ new TextVignets(mapping.getOrElse("$$", "").split("\t").toList, mapping)
 
+          case ("heatmap", x) =>
+            val rawMap=tMap(tLines(x))
+            val mapping = rawMap.filterNot(_._1.equals("$$")).mapValues(line=>{
+            	line.split("\t").map(_.toDouble).toList
+            })
+            
+          
+            vignetList = vignetList :+ new HeatMapVignet(rawMap.getOrElse("$$", "No header information").split("\t").toList, mapping)
+
           case ("cpt", x) =>
             val inData = tMap(tLines(x)).mapValues { f =>
               val pairs = CountPerTypePrep.keys.zip(f.split("\t"))
@@ -235,17 +247,14 @@ object EverythingFigure extends Tool {
 
       val labelListX1 = if (config.labelFlag) List(labels) else List.empty[LabelGenerator]
 
+      val labelList =
+        if (config.debugLabels)
+          List(new LabelGenerator) ++ labelListX1
+        else labelListX1
 
-      val labelList=
-      if(config.debugLabels)
-    	  List(new LabelGenerator)++labelListX1
-    	  else labelListX1
-     
-       
       TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring), bootstrap = config.bootstrapvalues, clusters = config.clusters, clusterColoring = config.clusterColoring)
 
-
-//      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring))
+      //      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring))
 
     }
 
