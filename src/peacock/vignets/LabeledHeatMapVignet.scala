@@ -9,7 +9,7 @@ import java.awt.Color
 import processing.core.PConstants
 
 
-class HeatMapVignet(header: String, valueLabelList: List[String], valueMapping: Map[String, Int]) extends VignetMaker {
+class LabeledHeatMapVignet(header: String, valueLabelList: List[String], valueMapping: Map[String, Int]) extends VignetMaker {
 
   val gradient = new ColorGradient(valueLabelList.size, Color.blue, Color.green, Color.yellow, Color.red); //new ColorGradient(labelList.size, Color.blue, Color.red)
 
