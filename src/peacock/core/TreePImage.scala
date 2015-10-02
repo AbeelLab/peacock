@@ -20,7 +20,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
   val maxH = vignets.map(f => f.y).max
 
   println("maxH: " + maxH)
-  val clusterWidth = if (clusters.isEmpty) 0 else clusters.head._2.size * 30 + 4
+  val clusterWidth = if (clusters.isEmpty) 0 else clusters.map(_._2.size).max * (treeWidth * 0.01).toInt + 4
   val totalWidth = vignets.map(f => f.x).sum + treeWidth + clusterWidth + 5
   val maxHeader = vignets.map(f => f.headerHeight).max
   val maxFooter = vignets.map(f => f.footerHeight).max
@@ -104,8 +104,8 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
               val c = clusterColorMap(head)
               buf.fill(c.getRed, c.getGreen, c.getBlue)
               buf.stroke(c.getRed, c.getGreen, c.getBlue)
-              buf.rect(x, yOffset + 2, 25, 12) // Colored bar indicating cluster
-              x = x + 30
+              buf.rect(x, yOffset + 2, (treeWidth * 0.008).toInt, 12) // Colored bar indicating cluster
+              x = x + (treeWidth * 0.01).toInt
               recursiveClusters(tail)
             }
             case Nil => 
