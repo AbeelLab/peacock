@@ -5,17 +5,17 @@ import java.awt.Color
 import processing.core.PGraphics
 import processing.pdf.PGraphicsPDF
 
-class CategoryRadialLegend(val mapping: Map[String, Color]) extends FreeFormAddition {
+class CategoryRadialLegend(val mapping: Map[String, Color],val legendIndex:Int=0) extends FreeFormAddition {
 
   override def drawFreeForm(buf: PGraphics) = {
-    println("drawing categoy legend")
+    println("drawing category legend")
     val width=24
     val height=24
     buf.pushMatrix()
   
     
     
-    buf.translate(20,PGraphicsPDF.RESCALE_FACTOR*buf.height-(mapping.size+1)*(height+3)+20)
+    buf.translate(20+legendIndex*250,PGraphicsPDF.RESCALE_FACTOR*buf.height-(mapping.size+1)*(height+3)+20)
     println(mapping)
     //FIXME only include used colors
     buf.noStroke()
@@ -26,7 +26,7 @@ class CategoryRadialLegend(val mapping: Map[String, Color]) extends FreeFormAddi
       buf.fill(buf.color(c.getRed(), c.getGreen(), c.getBlue()))
 
       buf.rect(0, 0, width-1, height-1)
-
+      buf.fill(buf.color(0))
       buf.text(pk._1, width+2, height-2)
       buf.translate(0, height+3)
     }

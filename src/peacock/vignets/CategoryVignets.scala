@@ -29,7 +29,7 @@ class CategoryVignets(val dataMap: Map[String,String], val colorMap: Map[String,
   val missingColor=colorMap.getOrElse("missing", Color.WHITE)
 
   override def y() = { height }
-  override def x() = { width+2 /*+ (colorMap.keys.toList.map(f => PTools.textWidth(f)).max).toInt */}
+  override def x() = { width+width/4 /*+ (colorMap.keys.toList.map(f => PTools.textWidth(f)).max).toInt */}
   override def headerHeight = {
     14 * colorMap.size +20
   }
@@ -52,7 +52,8 @@ class CategoryVignets(val dataMap: Map[String,String], val colorMap: Map[String,
   override def image(buf: PGraphics, key: String) {
     buf.pushMatrix
     buf.fill(0)
-    buf.stroke(255)
+//    buf.stroke(255)
+    buf.noStroke
     //    val buf: PGraphics = applet.createGraphics(x, y); //createGraphics(890, yPixels);
     if (!dataMap.contains(key))
       println("Missing key: " + key)
@@ -63,8 +64,9 @@ class CategoryVignets(val dataMap: Map[String,String], val colorMap: Map[String,
     buf.fill(buf.color(c.getRed(), c.getGreen(), c.getBlue()))
 
     buf.rect(0, 0, width-1, height-1)
-
+    buf.stroke(0)
     buf.popMatrix()
+   
   }
 
 }

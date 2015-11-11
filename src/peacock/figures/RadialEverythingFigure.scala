@@ -40,6 +40,7 @@ object RadialEverythingFigure extends Tool {
     val category: Seq[File] = Seq(),
     val categoryCoding: File = null,
     val categorySplit: Boolean = false,
+    val categoryWidth:Int = 45,
     val figureSize: Int = 1600)
 
   def main(args: Array[String]): Unit = {
@@ -77,7 +78,7 @@ object RadialEverythingFigure extends Tool {
       opt[File]("category") unbounded () action { (x, c) => c.copy(category = c.category :+ x) } text ("Categorical values")
       opt[File]("category-coding") action { (x, c) => c.copy(categoryCoding = x) } text ("Categorical color coding")
       opt[Unit]("category-split") action { (x, c) => c.copy(categorySplit = true) } text ("Split each category in a distinct circle")
-
+      opt[Int]("category-width")action { (x, c) => c.copy(categoryWidth = x) } text ("Split each category in a distinct circle")
       /*
          * Sample highlight
          */
@@ -132,8 +133,10 @@ object RadialEverythingFigure extends Tool {
         vignetList = vignetList :+ new BinaryVignets(config.binary)
       }
 
-      config.category.toList.map { file =>
+      
+      config.category.toList.zipWithIndex.map { z =>
 
+        val (file,idx)=z
         val dataMap = tMap(tLines(file))
 
         val colorMap = if (config.categoryCoding != null) {
@@ -156,16 +159,17 @@ object RadialEverythingFigure extends Tool {
           val keys = dataMap.values.toList.toSet
           for (key <- keys) {
             val subMap = dataMap.filter(_._2.equals(key))
-            vignetList = vignetList :+ new CategoryVignets(subMap, colorMap, 45, 15)
+            vignetList = vignetList :+ new CategoryVignets(subMap, colorMap, config.categoryWidth, 15)
           }
         } else {
-          vignetList = vignetList :+ new CategoryVignets(dataMap, colorMap, 45, 15)
+          vignetList = vignetList :+ new CategoryVignets(dataMap, colorMap, config.categoryWidth, 15)
 
         }
         val usedColors = colorMap.filter(pair => dataMap.values.toSet.contains(pair._1))
 
         
-        freeformList = freeformList :+ new CategoryRadialLegend(usedColors)
+        freeformList = freeformList :+ new CategoryRadialLegend(usedColors,idx)
+        
 
       }
 
