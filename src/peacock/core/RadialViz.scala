@@ -55,7 +55,7 @@ object RadialViz extends Tool {
 class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: List[VignetMaker], val exportPrefix: String, val freeForm: List[FreeFormAddition], val highlights: List[String],val lineage:File) extends PApplet with Tool {
 
   override def setup() {
-     val lineageX=if(lineage!=null)tMap(tLines(lineage),keyColumn=0,valueColumn=3,limitSplit=false)else Map.empty[String,String]
+     val lineageX=if(lineage!=null)tMap(tLines(lineage),keyColumn=0,valueColumn=1,limitSplit=false)else Map.empty[String,String]
     val treep = new RadialPImage(tree, treeWidth, labels, vignets, highlights,lineageX);
     val factor = PGraphicsPDF.RESCALE_FACTOR
     val g = this.createGraphics((treep.totalWidth / factor).toInt, (treep.totalHeight / factor).toInt, PConstants.PDF, exportPrefix + timestamp + ".pdf")

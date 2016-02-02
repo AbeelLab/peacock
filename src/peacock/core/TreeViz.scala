@@ -60,7 +60,7 @@ class TreeViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], 
 
   override def setup() {
     
-    val lineageX=if(lineage!=null && lineageColoring)tMap(tLines(lineage),keyColumn=1,valueColumn=2,limitSplit=false)else Map.empty[String,String]
+    val lineageX=if(lineage!=null && lineageColoring)tMap(tLines(lineage),keyColumn=0,valueColumn=1,limitSplit=false)else Map.empty[String,String]
     
     val clustersX = if (clusters != null) tMap(tLines(clusters), keyColumn=0, valueColumn=1).mapValues(str => str.split("\t").toList) else Map.empty[String, List[String]]    
     val clusterColoringX = if (clusterColoring != null) tMap(tLines(clusterColoring), keyColumn=0, valueColumn=1) else Map.empty[String, String]

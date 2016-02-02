@@ -63,6 +63,7 @@ object EverythingFigure extends Tool {
     				Removed Manhattan support
     				Removed Manhattan integrated tree labels
       2015/09/04    Added support for heat maps
+      2016/02/02    [CHANGE] Lineage files should have ID in first column and lineage information in second
       """
 
   def main(args: Array[String]): Unit = {
@@ -78,7 +79,7 @@ object EverythingFigure extends Tool {
 
       /* Labeling information */
       opt[File]("pgg") action { (x, c) => c.copy(pgg = x) } text ("File containing principal genetic group information.")
-      opt[File]("lineage") action { (x, c) => c.copy(lineage = x) } text ("File containing lineage information, by default this is generated from the spoligotypes.")
+      opt[File]("lineage") action { (x, c) => c.copy(lineage = x) } text ("File containing lineage information, by default this is generated from the spoligotypes. This should be a two-column file. The first column with the strain ID, the second LIN-[1-7B]")
       opt[Unit]("disable-lineage-colors") action { (x, c) => c.copy(disableLineageColoring = true) } text ("Disable lineage specific coloring")
 
       /* Genotype-phenotype figure */
