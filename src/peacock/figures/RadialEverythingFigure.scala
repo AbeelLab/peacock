@@ -126,7 +126,7 @@ object RadialEverythingFigure extends Tool {
       config.moreLabels.toList.map { file =>
         val mapping = tMap(tLines(file))
         // println(mapping.toList.take(5))
-        vignetList = vignetList :+ new TextVignets(mapping.getOrElse("$$", "").split("\t").toList, mapping,highlights)
+        vignetList = vignetList :+ new TextVignets(mapping.getOrElse("$$", "").split("\t").toList, mapping,highlights,1.7f)
       }
 
       if (config.binary != null) {

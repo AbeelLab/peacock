@@ -8,9 +8,9 @@ import processing.core.PGraphics
 import processing.core.PConstants
 import peacock.support.PTools
 //val tmpMatrix = tMap(tLines(matrixFile))
-class TextVignets(headerLabels: List[String], matrixFile: Map[String, String],highlights:List[String]=List.empty[String]) extends VignetMaker with Lines {
+class TextVignets(headerLabels: List[String], matrixFile: Map[String, String],highlights:List[String]=List.empty[String],fontSizeMultiplier:Float) extends VignetMaker with Lines {
 
-  val fontSizeMultiplier=1.7f
+  
   
   val extraSpacer = 5
   val matrix_in = matrixFile.mapValues(f => f.split("\t").toList)

@@ -153,7 +153,7 @@ object EverythingFigure extends Tool {
       /**
        * Geno-type phenotype matrix
        */
-      if (config.geno != null && config.pheno != null) {
+      if (config.geno != null || config.pheno != null) {
         /*
        * Default column sorting
        * Sorted is a list of pairs where the first item is the key, the second the display name. The order determines the display order of the columns
@@ -171,7 +171,7 @@ object EverythingFigure extends Tool {
         println("Sorted: " + sorted)
 
         //      System.exit(0)
-        val pgVignets = new PhenotypeGenotypeVignets(config.pheno, config.geno, sorted)
+        val pgVignets = new PhenotypeGenotypeVignets(config.pheno, config.geno, sorted, false)
         vignetList = vignetList :+ pgVignets
         freeformList = freeformList :+ pgVignets.pgLegend
       }
@@ -203,7 +203,7 @@ object EverythingFigure extends Tool {
 
             val mapping = tMap(tLines(x))
             // println(mapping.toList.take(5))
-            vignetList = vignetList :+ new TextVignets(mapping.getOrElse("$$", "").split("\t").toList, mapping)
+            vignetList = vignetList :+ new TextVignets(mapping.getOrElse("$$", "").split("\t").toList, mapping,highlights,1.0f)
 
           case ("heatmap", x) =>
             val rawMap=tMap(tLines(x))
