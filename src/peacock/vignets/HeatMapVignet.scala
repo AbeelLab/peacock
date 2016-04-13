@@ -7,57 +7,54 @@ import processing.core.PApplet
 import processing.core.PImage
 import java.awt.Color
 import processing.core.PConstants
+import peacock.support.PTools
 
+class HeatMapVignet(header: List[String], valueMapping: Map[String, List[Double]]) extends VignetMaker {
 
-class HeatMapVignet(header: String, valueLabelList: List[String], valueMapping: Map[String, Int]) extends VignetMaker {
-
-  val gradient = new ColorGradient(valueLabelList.size, Color.blue, Color.green, Color.yellow, Color.red); //new ColorGradient(labelList.size, Color.blue, Color.red)
+  val gradient = ColorGradient.whiteBlackGradient
 
   override def y() = { 16 }
-  override def x() = { 25 }
-  override def headerHeight = { 50 }
-  override def header(buf: PGraphics){
+  override def x() = { 16 * (valueMapping.map(_._2.size).max) }
+  override def headerHeight = { 
+    
+    if(header.size==0) 50 else
+	  (header.map(f=>PTools.textWidth(f))).max.toInt
+  
+  }
+  override def header(buf: PGraphics) {
     assume(x > 0, "X is zero")
     assume(headerHeight > 0, "headerHeight is zero")
-//    val buf: PGraphics = applet.createGraphics(x, headerHeight); //createGraphics(890, yPixels);
     buf.pushMatrix()
-//    buf.beginDraw()
     buf.fill(0)
-    buf.stroke(0)
+    buf.noStroke()
     buf.translate(0, headerHeight)
+    
     buf.rotate(-PConstants.HALF_PI)
+    for (h <- header) {
 
-    buf.text(header, 0, 12);
+      buf.text(h, 0, 12);
+      buf.translate(0, 16)
+    }
 
-//    buf.endDraw()
-//    buf.get(0, 0, buf.width, buf.height);
-    buf.popMatrix()
+     buf.popMatrix()
+    buf.stroke(0)
   }
 
-  //  def header(applet: PApplet): PImage = {
-  //    val buf: PGraphics = applet.createGraphics(1, 1); //createGraphics(890, yPixels);
-  //    buf.beginDraw
-  //    buf.endDraw()
-  //    buf.get(0, 0, buf.width, buf.height);
-  //  }
+ 
 
-  override def image(buf: PGraphics, key: String){
+  override def image(buf: PGraphics, key: String) {
     buf.pushMatrix()
-//    val buf: PGraphics = applet.createGraphics(x, y); //createGraphics(890, yPixels);
-//    buf.beginDraw
+  
+    val values = valueMapping.getOrElse(key, List.empty[Double]).zipWithIndex
 
-    val idx = valueMapping.getOrElse(key, -1)
-    println("Getting:" + key + "\t" + idx)
-    val color = if (idx >= 0) gradient.getColor(idx) else Color.gray
-    val label = if (idx >= 0) valueLabelList(idx) else key
+    for ((v, idx) <- values) {
+      val color = gradient.getColor(v)
 
-    buf.fill(buf.color(color.getRed(), color.getGreen(), color.getBlue()))
-    buf.rect(1, 1, x - 3, y - 3)
-    buf.fill(buf.color(0))
-    buf.text(label, (x - buf.textWidth(label)) / 2, 12)
-//    buf.endDraw()
-//    buf.get(0, 0, buf.width, buf.height);
-    buf.popMatrix()
+      buf.fill(buf.color(color.getRed(), color.getGreen(), color.getBlue()))
+      buf.rect(1, 1, x - 3, y - 3)
+      buf.translate(16, 0)
+    }
+     buf.popMatrix()
 
   }
 

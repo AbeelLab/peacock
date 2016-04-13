@@ -15,6 +15,8 @@ import processing.core.PConstants
 import processing.core.PGraphics
 import peacock.support.PTools
 import java.io.File
+import peacock.core.SharedViz
+
 
 object RadialViz extends Tool {
 
@@ -29,13 +31,13 @@ object RadialViz extends Tool {
     exportPrefix: String = "peacockR.",
     freeForm: Either[List[FreeFormAddition], FreeFormAddition] = List(new FreeFormAddition),
     highlights: List[String] = List.empty[String],
-    lineage:File=null  ) {
+    lineage: File = null) {
 
     val fLabels = labels.fold(identity, List(_))
     val fVignets = vignets.fold(identity, List(_))
     val fFreeform = freeForm.fold(identity, List(_))
 
-    val embed = new RadialViz(tree, treeWidth, fLabels, fVignets, exportPrefix, fFreeform, highlights,lineage);
+    val embed = new RadialViz(tree, treeWidth, fLabels, fVignets, exportPrefix, fFreeform, highlights, lineage);
     //
     //    frame.add(new JScrollPane(embed), BorderLayout.CENTER);
 
@@ -52,23 +54,24 @@ object RadialViz extends Tool {
 
 }
 
-class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: List[VignetMaker], val exportPrefix: String, val freeForm: List[FreeFormAddition], val highlights: List[String],val lineage:File) extends PApplet with Tool {
+class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: List[VignetMaker], val exportPrefix: String, val freeForm: List[FreeFormAddition], val highlights: List[String], val lineage: File) extends PApplet with Tool {
 
   override def setup() {
-     val lineageX=if(lineage!=null)tMap(tLines(lineage),keyColumn=0,valueColumn=3,limitSplit=false)else Map.empty[String,String]
-    val treep = new RadialPImage(tree, treeWidth, labels, vignets, highlights,lineageX);
+    val lineageX = SharedViz.readLineage(lineage)
+    val treep = new RadialPImage(tree, treeWidth, labels, vignets, highlights, lineageX);
     val factor = PGraphicsPDF.RESCALE_FACTOR
     val g = this.createGraphics((treep.totalWidth / factor).toInt, (treep.totalHeight / factor).toInt, PConstants.PDF, exportPrefix + timestamp + ".pdf")
     val pdf: PGraphicsPDF = g.asInstanceOf[PGraphicsPDF]
 
     pdf.beginDraw()
-   
+
     pdf.background(color(255))
 
     pdf.fill(255)
     pdf.rect(-1, -1, treep.totalWidth + 2, treep.totalHeight + 2)
     pdf.fill(0)
     treep.render(pdf);
+
     freeForm.map(f => {
       pdf.pushMatrix()
       f.drawFreeForm(pdf)
@@ -76,7 +79,6 @@ class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator]
     })
 
     pdf.nextPage()
-    pdf.scale(1 / factor)
     val text = List("RadialViz, a Peacock visualization (C) Thomas Abeel") ++ generatorInfo.split("\n") ++ labels.map(_.toString) ++ vignets.map(_.toString) ++ freeForm.map(_.toString()) ++ List("highlights: " + highlights.mkString(","), "export: " + exportPrefix)
 
     text.map(_.split("\n")).flatten.map { f =>

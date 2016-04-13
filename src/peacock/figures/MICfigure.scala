@@ -1,10 +1,9 @@
 package peacock.figures
 
-import peacock.vignets.HeatMapVignet
+import peacock.vignets.LabeledHeatMapVignet
 import atk.util.Tool
 import peacock.core.TableViz
 import java.io.File
-import peacock.vignets.HeatMapVignet
 import atk.compbio.tree.Tree
 import peacock.core.TreeViz
 import tbarc.drugs.DrugMapAPI
@@ -53,7 +52,7 @@ object MICfigure extends Tool {
       val labels = List("-","0.03","0.06","0.12","0.125", "0.25", "0.5","0.6", "1", ">1","1.2", "2", ">2","2.5", "4",">4","5", "8",">8","10", "16",">16","20", "32", ">32","40",">40")
       val map = remap(tMap(tLines(config.mic)), labels)
       val reverseList = map.filterNot(p =>p._1.equals("$$")).toList.sortBy(-_._2).map(_._1)
-      val mic = new HeatMapVignet("MIC", labels, map)
+      val mic = new LabeledHeatMapVignet("MIC", labels, map)
     val drugs = new DrugMapAPI(config.dst)
       val oflox = drugs.drugIdentifiers.filter(_.contains(config.drug))
       println("XF: " + oflox)

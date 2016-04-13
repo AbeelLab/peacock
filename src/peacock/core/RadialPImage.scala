@@ -72,8 +72,8 @@ class RadialPImage(tree: Tree, val canvasSize: Int, labels: List[LabelGenerator]
           buf.fill(c.getRed(), c.getGreen(), c.getBlue())
           buf.stroke(c.getRed(), c.getGreen(), c.getBlue())
         } else {
-          buf.fill(0)
-          buf.stroke(0)
+          buf.fill(40)
+          buf.stroke(40)
         }
       }
       
