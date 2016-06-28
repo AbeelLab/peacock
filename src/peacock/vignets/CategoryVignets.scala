@@ -12,39 +12,39 @@ import java.awt.Color
 import peacock.support.PTools
 import atk.util.ColorTools
 
-object CategoryVignets{
-  var usedLegendLines=0
+object CategoryVignets {
+  var usedLegendLines = 0
 }
 
-class CategoryVignets(val dataMap: Map[String,String], val colorMap: Map[String,Color], val width:Int=12,val height:Int=12) extends VignetMaker with Lines {
+class CategoryVignets(val inputMap: Map[String, String], val colorMap: Map[String, Color], val width: Int = 12, val height: Int = 12) extends VignetMaker with Lines {
 
- 
-
-  override def toString() ={
-    "CategoryVignet:\n\tcategory="+dataMap.take(2).toString+"\n\tcoding="+colorMap
+  override def toString() = {
+    "CategoryVignet:\n\tcategory=" + dataMap.take(2).toString + "\n\tcoding=" + colorMap
   }
-  
-  
-  val defaultColor=colorMap.getOrElse("default", Color.LIGHT_GRAY)
-  val missingColor=colorMap.getOrElse("missing", Color.WHITE)
 
+  val defaultColor = colorMap.getOrElse("default", Color.LIGHT_GRAY)
+  val missingColor = colorMap.getOrElse("missing", Color.WHITE)
+
+  private val dataMap = inputMap.mapValues(_.split("\t"))
+
+  println(dataMap.take(5))
   override def y() = { height }
-  override def x() = { width+width/4 /*+ (colorMap.keys.toList.map(f => PTools.textWidth(f)).max).toInt */}
+  override def x() = { (width + width / 4) * dataMap.head._1.size /*+ (colorMap.keys.toList.map(f => PTools.textWidth(f)).max).toInt */ }
   override def headerHeight = {
-    14 * colorMap.size +20
+    14 * colorMap.size + 20
   }
   override def header(buf: PGraphics) {
     buf.pushMatrix()
-    buf.translate(0,20)
+    buf.translate(0, 20)
     //FIXME only include used colors
     for (pk <- colorMap) {
       val c = pk._2
       buf.fill(buf.color(c.getRed(), c.getGreen(), c.getBlue()))
 
-      buf.rect(0, 0, width-1, height-1)
+      buf.rect(0, 0, width - 1, height - 1)
 
-      buf.text(pk._1, width+2, height-2)
-      buf.translate(0, height+2)
+      buf.text(pk._1, width + 2, height - 2)
+      buf.translate(0, height + 2)
     }
     buf.popMatrix()
   }
@@ -52,21 +52,24 @@ class CategoryVignets(val dataMap: Map[String,String], val colorMap: Map[String,
   override def image(buf: PGraphics, key: String) {
     buf.pushMatrix
     buf.fill(0)
-//    buf.stroke(255)
+    //    buf.stroke(255)
     buf.noStroke
     //    val buf: PGraphics = applet.createGraphics(x, y); //createGraphics(890, yPixels);
     if (!dataMap.contains(key))
       println("Missing key: " + key)
 
-    val l = dataMap.getOrElse(key, "missing")
+    val lx = dataMap.getOrElse(key, List("missing").toArray)
 
-    val c = if(!dataMap.contains(key))missingColor else colorMap.getOrElse(l, defaultColor)
-    buf.fill(buf.color(c.getRed(), c.getGreen(), c.getBlue()))
+    for (l <- lx.zipWithIndex) {
+      val c = if (!dataMap.contains(key)) missingColor else colorMap.getOrElse(l._1, defaultColor)
+      buf.fill(buf.color(c.getRed(), c.getGreen(), c.getBlue()))
 
-    buf.rect(0, 0, width-1, height-1)
+      buf.rect((width+width/4)*l._2, 0, width - 1, height - 1)
+      
+    }
     buf.stroke(0)
     buf.popMatrix()
-   
+
   }
 
 }

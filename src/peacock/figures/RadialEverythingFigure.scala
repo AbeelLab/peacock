@@ -148,7 +148,7 @@ object RadialEverythingFigure extends Tool {
             //      new Color(arr(0).toInt, arr(1).toInt, arr(2).toInt)
           })
         } else {
-          val list = dataMap.values.toSet.toList
+          val list = dataMap.values.map(_.split("\t")).flatten.toSet.toList
           (for (key <- list.zipWithIndex) yield {
             key._1 -> ColorPalette(key._2)
           }).toMap
