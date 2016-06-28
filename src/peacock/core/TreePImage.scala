@@ -14,7 +14,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
 
   val vignets = if (inputVignets.size == 0) List(new VignetMaker) else inputVignets
 
-  val totalChildren = tree.getLeafCount()
+  val totalChildren =tree.getLeaves(tree.root).size
 
   println("Children: " + totalChildren)
   val maxH = vignets.map(f => f.y).max
@@ -35,15 +35,15 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
 
   def render(buf: PGraphics, mirrorText: Boolean) {
     buf.pushMatrix()
-    val maxTextWidth = tree.getLeaves(tree.getRoot()).map(p => {
+    val maxTextWidth = tree.getLeaves(tree.root).map(p => {
       labels.map(labelGen =>
         buf.textWidth(labelGen.label(p.getName()))).sum
     }).max
 
-    val xMultiplier = (treeWidth - 10 - maxTextWidth) / tree.getRoot().longestWeight //tree.getHeight()
+    val xMultiplier = (treeWidth - 10 - maxTextWidth) / tree.root.longestWeight //tree.getHeight()
 
     println("Treeheight=" + tree.getHeight())
-    println("TreeiLenght=" + tree.getRoot.longestWeight)
+    println("TreeiLenght=" + tree.root.longestWeight)
 
     buf.pushMatrix()
     buf.translate(0, maxHeader)

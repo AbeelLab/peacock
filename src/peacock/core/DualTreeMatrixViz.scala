@@ -76,8 +76,8 @@ class DualTreeMatrixViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGe
   override def setup() {
     
     val treep = new TreePImage(tree, treeWidth, labels, List.empty[VignetMaker]);
-    val width = tree.getLeafCount() * vignets.x + treep.totalWidth
-    val height = tree.getLeafCount() * vignets.y + treep.totalWidth
+    val width =tree.getLeaves(tree.root).size * vignets.x + treep.totalWidth
+    val height = tree.getLeaves(tree.root).size * vignets.y + treep.totalWidth
 
     println("W = " + width)
     println("H = " + height)
@@ -114,9 +114,9 @@ class DualTreeMatrixViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGe
     //    pdf.fill(pdf.color(255, 0, 0))
     //    pdf.rect(0, 0, 100, 100)
 
-    for (a <- 0 until tree.getLeafCount()) {
+    for (a <- 0 until tree.getLeaves(tree.root).size) {
       val x = tree.getLeaves(tree.root)(a)
-      for (b <- 0 until tree.getLeafCount()) {
+      for (b <- 0 until tree.getLeaves(tree.root).size) {
         val y = tree.getLeaves(tree.root)(b) //tree.getLeaf(b)
         println(x.getName() + "\t" + y.getName() + "\t" + (a * vignets.x) + "\t" + b * vignets.y)
         pdf.pushMatrix()

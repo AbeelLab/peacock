@@ -32,7 +32,7 @@ object CreateBuffers extends Tool {
 
     val tree = new Tree(treeFile.toString);
 
-    val identifiers = tree.getLeaves(tree.getRoot()).map(_.getName())
+    val identifiers = tree.getLeaves(tree.root).map(_.getName())
 //    val identifiers = allLeaves.map {
 //      case List(x) => x
 //      case List() => "reference"

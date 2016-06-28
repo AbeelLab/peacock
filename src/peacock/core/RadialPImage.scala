@@ -11,7 +11,7 @@ class RadialPImage(tree: Tree, val canvasSize: Int, labels: List[LabelGenerator]
 
   val vignets = if (inputVignets.size == 0) List(new VignetMaker) else inputVignets
 
-  val totalChildren = tree.getLeafCount()
+  val totalChildren = tree.getLeaves(tree.root).size
 
   val totalWidth = canvasSize
   val totalHeight = canvasSize
@@ -32,10 +32,10 @@ class RadialPImage(tree: Tree, val canvasSize: Int, labels: List[LabelGenerator]
   
 
     val treeRadius = (canvasSize - 2 * vignetLen - 2 * labelLen) / 2
-    val xMultiplier = (treeRadius - 10) / tree.getRoot().longestWeight //tree.getHeight()
+    val xMultiplier = (treeRadius - 10) / tree.root.longestWeight //tree.getHeight()
     val radianIncrement = (2 * math.Pi - 0.05) / totalChildren
     println("Treeheight=" + tree.getHeight())
-    println("TreeiLenght=" + tree.getRoot.longestWeight)
+    println("TreeiLenght=" + tree.root.longestWeight)
     println("Tree radius=" + treeRadius)
 
     /**
