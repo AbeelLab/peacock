@@ -64,6 +64,7 @@ object EverythingFigure extends Tool {
     				Removed Manhattan integrated tree labels
       2015/09/04    Added support for heat maps
       2016/02/02    [CHANGE] Lineage files should have ID in first column and lineage information in second
+      2016/08/26    Added support for multi-color/multi-column category files
       """
 
   def main(args: Array[String]): Unit = {
@@ -190,7 +191,7 @@ object EverythingFigure extends Tool {
                 //      new Color(arr(0).toInt, arr(1).toInt, arr(2).toInt)
               })
             } else {
-              val list = dataMap.values.map(_.split("\t")).flatten.toSet.toList
+              val list = dataMap.filterNot { _._1.contains("$$") }.values.map(_.split("\t")).flatten.toSet.toList
               (for (key <- list.zipWithIndex) yield {
                 key._1 -> ColorPalette(key._2)
               }).toMap
