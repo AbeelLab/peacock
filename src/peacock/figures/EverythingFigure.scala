@@ -43,7 +43,8 @@ object EverythingFigure extends Tool {
     val debugLabels: Boolean = false,
     val bootstrapvalues: Boolean = false,
     val clusters: File = null,
-    val clusterColoring: File = null)
+    val clusterColoring: File = null,
+    val internalExtra:File = null)
 
   private val colorMap = List("LongDeletion" -> new Color(228, 26, 28), "LongInsertion" -> new Color(55, 126, 184),
     "LongSubstitution" -> new Color(77, 175, 74), "SingleDeletion" -> new Color(152, 78, 163), "SingleInsertion" -> new Color(255, 127, 0), "SingleSubstitution" -> new Color(255, 255, 51)).toMap
@@ -65,6 +66,7 @@ object EverythingFigure extends Tool {
       2015/09/04    Added support for heat maps
       2016/02/02    [CHANGE] Lineage files should have ID in first column and lineage information in second
       2016/08/26    Added support for multi-color/multi-column category files
+      2016/09/28    Added support for in-tree labels
       """
 
   def main(args: Array[String]): Unit = {
@@ -134,6 +136,12 @@ object EverythingFigure extends Tool {
       opt[File]("clusters") action { (x, c) => c.copy(clusters = x) } text ("File containing cluster information")
       opt[File]("cluster-colors") action { (x, c) => c.copy(clusterColoring = x) } text ("File containing cluster colors.")
 
+      /*
+       * Internal text labels
+       */
+      opt[File]("internal-extra")action { (x, c) => c.copy(internalExtra = x) } text ("Internal label information")
+      
+      
       /**
        * Debug options
        *
@@ -254,7 +262,7 @@ object EverythingFigure extends Tool {
           List(new LabelGenerator) ++ labelListX1
         else labelListX1
 
-      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring), bootstrap = config.bootstrapvalues, clusters = config.clusters, clusterColoring = config.clusterColoring)
+      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring), bootstrap = config.bootstrapvalues, clusters = config.clusters, clusterColoring = config.clusterColoring,internalLabels=config.internalExtra)
 
       //      TreeViz.make(tree, treeWidth = config.treeWidth, freeForm = freeformList.toList, labels = labelList, vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacock.magic.", highlights = highlights, lineage = config.lineage, lineageColoring = (!config.disableLineageColoring))
 

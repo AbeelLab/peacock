@@ -9,12 +9,20 @@ import atk.compbio.tree.TreeNode
 import java.io.File
 import atk.util.ColorTools
 import atk.util.Lines
+import atk.util.Tool
 
-class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String], val lineage: Map[String, String] = Map.empty[String, String], val clusters: Map[String, List[String]] = Map.empty[String, List[String]], val clusterColoring: Map[String, String] = Map.empty[String, String]) extends PRender with CoreConfig {
+class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String], val lineage: Map[String, String] = Map.empty[String, String], val clusters: Map[String, List[String]] = Map.empty[String, List[String]], val clusterColoring: Map[String, String] = Map.empty[String, String], internalLabels: File) extends PRender with CoreConfig with Tool {
+
+  val internals = if (internalLabels != null) {
+    tMap(tLines(internalLabels)).map(p => p._1.split(";").toList.sortBy(identity).mkString(";") -> p._2)
+  } else {
+    Map.empty[String, String]
+  }
+  println("Internal labels:\n\t" + internals.mkString("\n\t"))
 
   val vignets = if (inputVignets.size == 0) List(new VignetMaker) else inputVignets
 
-  val totalChildren =tree.getLeaves(tree.root).size
+  val totalChildren = tree.getLeaves(tree.root).size
 
   println("Children: " + totalChildren)
   val maxH = vignets.map(f => f.y).max
@@ -28,7 +36,6 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
   val clusterColorMap = clusterColoring.mapValues(ColorTools.decodeColor(_))
   println("TW = " + totalWidth)
 
-  
   override def render(buf: PGraphics) {
     render(buf, false)
   }
@@ -75,14 +82,14 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
     buf.pushMatrix()
     buf.translate(0, maxHeader)
 
-
     /**
      * Returns center Y of subtrees
      */
     def drawRecursive(node: TreeNode, yOffset: Int, xOffset: Double): Int = {
       val x = xOffset //(node.height) * chunkX
 
-      val llls = tree.getLeaves(node).map(_.getName()).filter(lineage.contains(_)).map(f => lineage(f)).toSet
+      val leafySet = tree.getLeaves(node).map(_.getName())
+      val llls = leafySet.filter(lineage.contains(_)).map(f => lineage(f)).toSet
 
       def setColor() {
         if (llls.size == 1 && colorMap.contains(llls.head)) {
@@ -94,7 +101,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
           buf.stroke(0)
         }
       }
-      
+
       def drawClusters() {
         if (!clusters.isEmpty) {
           val clusterLevels = clusters(node.getName)
@@ -108,16 +115,16 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
               x = x + (treeWidth * 0.01).toInt
               recursiveClusters(tail)
             }
-            case Nil => 
+            case Nil =>
           }
           recursiveClusters(clusterLevels)
         }
       }
-      
+
       setColor // Removing this line does not change anything?
-            
+
       val cc = node.children
-      if (cc.size() == 0) {//If leave node
+      if (cc.size() == 0) { //If leave node
 
         buf.line(x.toInt, yOffset + maxH / 2, (x + node.weight * xMultiplier).toInt, yOffset + maxH / 2)
         buf.stroke(buf.color(190, 190, 190))
@@ -136,7 +143,7 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
             buf.fill(buf.color(255, 153, 153))
             buf.noStroke()
             buf.rect(0, -maxH / 2 + 2, maxTextWidth, maxH)
-           setColor
+            setColor
           }
 
           if (mirrorText)
@@ -188,9 +195,19 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
         val bottomY = yPositions.max //calculateY(zipper.last)
 
         val y = (yPositions.min + yPositions.max) / 2
-       setColor
+        setColor
         buf.line(x.toInt, y, (x + node.weight * xMultiplier).toInt, y)
         buf.line((x + node.weight * xMultiplier).toInt, topY, (x + node.weight * xMultiplier).toInt, bottomY);
+
+        val internalID = leafySet.toList.sortBy(identity).mkString(";")
+
+        println("Internal node id: " + internalID)
+        val internalLabel = internals.getOrElse(internalID, "")
+        if(internalLabel.size>0){
+          internalLabel.split("\t").zipWithIndex.map{t=>
+          buf.text(t._1, (x + node.weight * xMultiplier).toInt,y+t._2*12)}
+        }
+        
 
         y
       }
@@ -217,6 +234,6 @@ class TreePImage(tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], i
     buf.popMatrix() //complete footer
 
     buf.popMatrix() //complete draw
-  }  
+  }
 
 }

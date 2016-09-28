@@ -33,13 +33,14 @@ object TreeViz extends Tool {
     lineageColoring:Boolean=true,
     bootstrap: Boolean = false,
     clusters: File = null,
-    clusterColoring: File = null) {
+    clusterColoring: File = null,
+    internalLabels:File=null) {
 
     val fLabels = labels.fold(identity, List(_))
     val fVignets = vignets.fold(identity, List(_))
     val fFreeform = freeForm.fold(identity, List(_))
 
-    val embed = new TreeViz(tree, treeWidth, fLabels, fVignets, exportPrefix, fFreeform,highlights,lineage,lineageColoring, bootstrap, clusters, clusterColoring);
+    val embed = new TreeViz(tree, treeWidth, fLabels, fVignets, exportPrefix, fFreeform,highlights,lineage,lineageColoring, bootstrap, clusters, clusterColoring,internalLabels);
     //
     //    frame.add(new JScrollPane(embed), BorderLayout.CENTER);
 
@@ -56,7 +57,7 @@ object TreeViz extends Tool {
 
 }
 
-class TreeViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: List[VignetMaker], val exportPrefix: String, val freeForm: List[FreeFormAddition],val highlights:List[String],val lineage:File,val lineageColoring:Boolean, val bootstrap: Boolean, val clusters: File, val clusterColoring: File) extends PApplet with Tool {
+class TreeViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: List[VignetMaker], val exportPrefix: String, val freeForm: List[FreeFormAddition],val highlights:List[String],val lineage:File,val lineageColoring:Boolean, val bootstrap: Boolean, val clusters: File, val clusterColoring: File, val  internalLabels:File) extends PApplet with Tool {
 
   override def setup() {
     
@@ -65,7 +66,7 @@ class TreeViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], 
     val clustersX = if (clusters != null) tMap(tLines(clusters), keyColumn=0, valueColumn=1).mapValues(str => str.split("\t").toList) else Map.empty[String, List[String]]    
     val clusterColoringX = if (clusterColoring != null) tMap(tLines(clusterColoring), keyColumn=0, valueColumn=1) else Map.empty[String, String]
     
-    val treep = new TreePImage(tree, treeWidth, labels, vignets,highlights,lineageX, clustersX, clusterColoringX);
+    val treep = new TreePImage(tree, treeWidth, labels, vignets,highlights,lineageX, clustersX, clusterColoringX, internalLabels);
     val factor=PGraphicsPDF.RESCALE_FACTOR
     var pdf: PGraphics = this.createGraphics((treep.totalWidth/factor).toInt, (treep.totalHeight/factor).toInt, PConstants.PDF, exportPrefix + timestamp + ".pdf");
    

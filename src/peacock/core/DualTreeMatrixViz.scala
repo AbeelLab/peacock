@@ -75,7 +75,7 @@ class DualTreeMatrixViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGe
 
   override def setup() {
     
-    val treep = new TreePImage(tree, treeWidth, labels, List.empty[VignetMaker]);
+    val treep = new TreePImage(tree, treeWidth, labels, List.empty[VignetMaker],internalLabels=null);
     val width =tree.getLeaves(tree.root).size * vignets.x + treep.totalWidth
     val height = tree.getLeaves(tree.root).size * vignets.y + treep.totalWidth
 
