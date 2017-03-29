@@ -1,5 +1,5 @@
 # peacock
 
-Nightly builds available:  http://abeellab.org/jenkins/peacock/
+Nightly builds available:  http://genomeview.org/jenkins/peacock/
 
 
