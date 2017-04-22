@@ -71,7 +71,7 @@ object EverythingFigure extends Tool {
 
   def main(args: Array[String]): Unit = {
 
-    val parser = new scopt.OptionParser[Config]("java -jar peacock.jar magic") {
+    val parser = new scopt.OptionParser[Config]("java -jar peacock.jar tree") {
       /* Output prefix */
       opt[String]('o', "output") required () action { (x, c) => c.copy(outputPrefix = x) } text ("File prefix for the output files.")
 
