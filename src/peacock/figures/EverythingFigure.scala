@@ -75,6 +75,8 @@ object EverythingFigure extends Tool {
       /* Output prefix */
       opt[String]('o', "output") required () action { (x, c) => c.copy(outputPrefix = x) } text ("File prefix for the output files.")
 
+      
+      
       /* Phylogenetic tree */
       opt[String]('t', "tree") required () action { (x, c) => c.copy(tree = x) } text ("File containing the phylogenetic tree in NWK format.")
       opt[Unit]("no-labels") action { (x, c) => c.copy(labelFlag = false) } text ("Do not include sample identifier labels")
@@ -104,6 +106,7 @@ object EverythingFigure extends Tool {
        */
       opt[File]("category") unbounded () action { (x, c) => c.copy(multiFile = c.multiFile :+ ("category", x)) } text ("Categorical values")
       opt[File]("category-coding") action { (x, c) => c.copy(categoryCoding = x) } text ("Categorical color coding")
+      opt[Int]("category-width") action { (x, c) => println("ignoring category-width"); c } text ("Category width (ignored for compatibility with radial)")
 
       /*
        * Heatmap
@@ -136,6 +139,9 @@ object EverythingFigure extends Tool {
       opt[File]("clusters") action { (x, c) => c.copy(clusters = x) } text ("File containing cluster information")
       opt[File]("cluster-colors") action { (x, c) => c.copy(clusterColoring = x) } text ("File containing cluster colors.")
 
+      
+      opt[Int]("size")action { (x, c) => println("ignoring size"); c } text ("Figure size (ignored for compatibility with radial)")
+      
       /*
        * Internal text labels
        */
