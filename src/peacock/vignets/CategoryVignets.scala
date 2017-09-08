@@ -28,7 +28,8 @@ class CategoryVignets(val inputMap: Map[String, String], val colorMap: Map[Strin
 
   private val dataMap = inputMap.mapValues(_.split("\t"))
 
-  private val tmp = dataMap.getOrElse("$$", null).toList
+  private val dummyHeader=Array.tabulate(dataMap.head._2.size)(e=>""+e)
+  private val tmp = dataMap.getOrElse("$$",dummyHeader ).toList
   println("TMP: " + tmp)
   assert(tmp != null, "The matrix file does not appear to have a heading indicated with $$")
   private val defaultOrder = tmp.zip(tmp)
