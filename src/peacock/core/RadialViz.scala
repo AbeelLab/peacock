@@ -31,13 +31,15 @@ object RadialViz extends Tool {
     exportPrefix: String = "peacockR.",
     freeForm: Either[List[FreeFormAddition], FreeFormAddition] = List(new FreeFormAddition),
     highlights: List[String] = List.empty[String],
-    lineage: File = null) {
+    lineage: File = null,
+    lineageColoring:File=null  
+  ) {
 
     val fLabels = labels.fold(identity, List(_))
     val fVignets = vignets.fold(identity, List(_))
     val fFreeform = freeForm.fold(identity, List(_))
 
-    val embed = new RadialViz(tree, treeWidth, fLabels, fVignets, exportPrefix, fFreeform, highlights, lineage);
+    val embed = new RadialViz(tree, treeWidth, fLabels, fVignets, exportPrefix, fFreeform, highlights, lineage,lineageColoring);
     //
     //    frame.add(new JScrollPane(embed), BorderLayout.CENTER);
 
@@ -54,11 +56,13 @@ object RadialViz extends Tool {
 
 }
 
-class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: List[VignetMaker], val exportPrefix: String, val freeForm: List[FreeFormAddition], val highlights: List[String], val lineage: File) extends PApplet with Tool {
+class RadialViz(val tree: Tree, val treeWidth: Int, labels: List[LabelGenerator], vignets: List[VignetMaker], val exportPrefix: String, val freeForm: List[FreeFormAddition], val highlights: List[String], val lineage: File, val lineageColoringFile:File) extends PApplet with Tool {
 
   override def setup() {
     val lineageX = SharedViz.readLineage(lineage)
-    val treep = new RadialPImage(tree, treeWidth, labels, vignets, highlights, lineageX);
+     val lineageColoringX =if (lineageColoringFile!=null)tMap(tLines(lineageColoringFile), keyColumn=0, valueColumn=1) else Map.empty[String, String]
+  
+    val treep = new RadialPImage(tree, treeWidth, labels, vignets, highlights, lineageX,lineageColoringX);
     val factor = PGraphicsPDF.RESCALE_FACTOR
     val g = this.createGraphics((treep.totalWidth / factor).toInt, (treep.totalHeight / factor).toInt, PConstants.PDF, exportPrefix + timestamp + ".pdf")
     val pdf: PGraphicsPDF = g.asInstanceOf[PGraphicsPDF]

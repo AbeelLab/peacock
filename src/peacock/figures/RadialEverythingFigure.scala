@@ -34,6 +34,7 @@ object RadialEverythingFigure extends Tool {
     val outputPrefix: String = null,
     val pgg: File = null,
     val lineage: File = null,
+    val lineageColor:File=null,
     val tree: String = null,
     val order: File = null,
     val highlightFile: File = null,
@@ -57,6 +58,7 @@ object RadialEverythingFigure extends Tool {
       /* Labeling information */
       opt[File]("pgg") action { (x, c) => c.copy(pgg = x) } text ("File containing principal genetic group information.")
       opt[File]("lineage") action { (x, c) => c.copy(lineage = x) } text ("File containing lineage information, by default this is generated from the spoligotype.")
+      opt[File]("lineage-color") action { (x, c) => c.copy(lineageColor = x) } text ("File containing lineage colors.")
 
       /* Genotype-phenotype figure */
       opt[File]("phenotype") action { (x, c) => c.copy(pheno = x) } text ("File containing the phenotypes in matrix format")
@@ -173,7 +175,7 @@ object RadialEverythingFigure extends Tool {
 
       }
 
-      RadialViz.make(tree, treeWidth = config.figureSize, freeForm = freeformList.toList, labels = List(new LabelGenerator, labels), vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacockR.magic.", highlights = highlights, lineage = config.lineage)
+      RadialViz.make(tree, treeWidth = config.figureSize, freeForm = freeformList.toList, labels = List(new LabelGenerator, labels), vignets = vignetList.toList, exportPrefix = config.outputPrefix + "peacockR.magic.", highlights = highlights, lineage = config.lineage,lineageColoring=config.lineageColor)
 
     }
 

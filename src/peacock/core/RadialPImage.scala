@@ -6,9 +6,15 @@ import processing.core.PGraphics
 import scala.collection.JavaConversions._
 import atk.compbio.tree.Tree
 import atk.compbio.tree.TreeNode
+import atk.util.ColorTools
 
-class RadialPImage(tree: Tree, val canvasSize: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String],lineage:Map[String,String]=Map.empty[String,String]) extends PRender with CoreConfig {
+class RadialPImage(tree: Tree, val canvasSize: Int, labels: List[LabelGenerator], inputVignets: List[VignetMaker], highlights: List[String] = List.empty[String],lineage:Map[String,String]=Map.empty[String,String],lineageColorsIn:Map[String,String]) extends PRender  {
 
+  
+  val lineageColors =  (lineageColorsIn ++  Map("LIN-1" -> "0xed00c3",
+    "LIN-2" -> "0x0000ff", "LIN-3" -> "0x500079", "LIN-4" -> "0xff0000", "LIN-5" -> "0x4e2c00", "LIN-6" -> "0x006600", "LIN-7" -> "0xff7e00", "LIN-animal" -> "0x00ff9c", "LIN-B" -> "0x00ff9c", "M-CANETTII" -> "0x00ffff")).mapValues(ColorTools.decodeColor(_))
+
+  
   val vignets = if (inputVignets.size == 0) List(new VignetMaker) else inputVignets
 
   val totalChildren = tree.getLeaves(tree.root).size
@@ -67,8 +73,8 @@ class RadialPImage(tree: Tree, val canvasSize: Int, labels: List[LabelGenerator]
       val llls = tree.getLeaves(node).map(_.getName()).filter(lineage.contains(_)).map(f => lineage(f)).toSet
 
       def setColor() {
-        if (llls.size == 1 && colorMap.contains(llls.head)) {
-          val c = colorMap(llls.head)
+        if (llls.size == 1 && lineageColors.contains(llls.head)) {
+          val c = lineageColors(llls.head)
           buf.fill(c.getRed(), c.getGreen(), c.getBlue())
           buf.stroke(c.getRed(), c.getGreen(), c.getBlue())
         } else {
