@@ -197,7 +197,7 @@ object EverythingFigure extends Tool {
             val dataMap = tMap(tLines(x))
 
             val colorMap = if (config.categoryCoding != null) {
-              assume(config.categoryCoding.exists())
+              assume(config.categoryCoding.exists(), "The provide color coding file does not exist: "+config.categoryCoding)
               tMap(tLines(config.categoryCoding)).mapValues(f => {
                 //      val arr = f.split("\t")
                 ColorTools.decodeColor(f)
