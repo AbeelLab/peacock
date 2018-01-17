@@ -15,11 +15,11 @@ class HeatMapVignet(header: List[String], valueMapping: Map[String, List[Double]
 
   override def y() = { 16 }
   override def x() = { 16 * (valueMapping.map(_._2.size).max) }
-  override def headerHeight = { 
-    
-    if(header.size==0) 50 else
-	  (header.map(f=>PTools.textWidth(f))).max.toInt
-  
+  override def headerHeight = {
+
+    if (header.size == 0) 50 else
+      (header.map(f => PTools.textWidth(f))).max.toInt
+
   }
   override def header(buf: PGraphics) {
     assume(x > 0, "X is zero")
@@ -28,7 +28,7 @@ class HeatMapVignet(header: List[String], valueMapping: Map[String, List[Double]
     buf.fill(0)
     buf.noStroke()
     buf.translate(0, headerHeight)
-    
+
     buf.rotate(-PConstants.HALF_PI)
     for (h <- header) {
 
@@ -36,15 +36,13 @@ class HeatMapVignet(header: List[String], valueMapping: Map[String, List[Double]
       buf.translate(0, 16)
     }
 
-     buf.popMatrix()
+    buf.popMatrix()
     buf.stroke(0)
   }
 
- 
-
   override def image(buf: PGraphics, key: String) {
     buf.pushMatrix()
-  
+
     val values = valueMapping.getOrElse(key, List.empty[Double]).zipWithIndex
 
     for ((v, idx) <- values) {
@@ -54,7 +52,7 @@ class HeatMapVignet(header: List[String], valueMapping: Map[String, List[Double]
       buf.rect(1, 1, x - 3, y - 3)
       buf.translate(16, 0)
     }
-     buf.popMatrix()
+    buf.popMatrix()
 
   }
 
