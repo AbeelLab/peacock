@@ -89,7 +89,8 @@ object RadialEverythingFigure extends Tool {
     parser.parse(args, Config()) map { config =>
 
       val tree = new Tree(config.tree)
-
+      if(tree.root.weight>0.99)
+        tree.root.weight=0
       val highlights = if (config.highlightFile != null) tColumn(0,tLines(config.highlightFile)) /*.map(GNumbers.singleG(_))*/ else List.empty[String]
 
       val labels = new LabelGenerator

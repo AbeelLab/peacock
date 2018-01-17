@@ -160,6 +160,8 @@ object EverythingFigure extends Tool {
     parser.parse(args, Config()) map { config =>
 
       val tree = new Tree(config.tree)
+      if(tree.root.weight>0.99)
+        tree.root.weight=0
 
       val highlights = if (config.highlightFile != null) tLines(config.highlightFile) else List.empty[String]
 
