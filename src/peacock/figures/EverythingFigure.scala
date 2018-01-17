@@ -45,7 +45,8 @@ object EverythingFigure extends Tool {
     val bootstrapvalues: Boolean = false,
     val clusters: File = null,
     val clusterColoring: File = null,
-    val internalExtra:File = null)
+    val internalExtra:File = null,
+    val heatmapLog:Boolean =false)
 
   private val colorMap = List("LongDeletion" -> new Color(228, 26, 28), "LongInsertion" -> new Color(55, 126, 184),
     "LongSubstitution" -> new Color(77, 175, 74), "SingleDeletion" -> new Color(152, 78, 163), "SingleInsertion" -> new Color(255, 127, 0), "SingleSubstitution" -> new Color(255, 255, 51)).toMap
@@ -114,6 +115,7 @@ object EverythingFigure extends Tool {
        * Heatmap
        */
       opt[File]("heatmap") unbounded () action { (x, c) => c.copy(multiFile = c.multiFile :+ ("heatmap", x)) } text ("Heatmap matrix file with values [0,1]")
+      opt[Unit]("heatmap-log") unbounded () action { (x, c) => c.copy(heatmapLog = true) } text ("Take logarithm of all heatmap values")
       /*
        * CPT
        */
@@ -227,7 +229,13 @@ object EverythingFigure extends Tool {
           case ("heatmap", x) =>
             val rawMap=tMap(tLines(x))
             val mapping = rawMap.filterNot(_._1.equals("$$")).mapValues(line=>{
-            	line.split("\t").map(_.toDouble).toList
+              
+            	val preMap=line.split("\t").map(_.toDouble).toList
+            	if(config.heatmapLog){
+            	  preMap.map { d => -math.log(d) }
+            	}else{
+            	  preMap
+            	}
             })
             
           
