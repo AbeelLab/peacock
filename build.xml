@@ -1,189 +1,135 @@
 <?xml version="1.0"?>
-<project
-    name="Peacock: Tree visualization library"
-    basedir="."
-    default="dist" >
+<project name="Peacock: Tree visualization library" basedir="." default="dist">
 
-    <property
-        name="project"
-        value="peacock" />
+	<property name="project" value="peacock" />
 
-    <property
-        name="manifest.mainClass"
-        value="peacock.PeacockConsole" />
+	<property name="manifest.mainClass" value="peacock.PeacockConsole" />
 
-    <property
-        name="src"
-        value="src" />
+	<property name="src" value="src" />
 
-    <fileset
-        id="jarfiles"
-        dir="." >
+	<fileset id="jarfiles" dir=".">
 
-        	
-        <include name="lib/atk-*.jar" />
 
-        <include name="lib/processing-2.0.3/*.jar" />
+		<include name="lib/atk-*.jar" />
 
-        <include name="lib/commons-codec-*.jar" />
+		<include name="lib/processing-2.0.3/*.jar" />
 
-        <include name="lib/ajt-*.jar" />
+		<include name="lib/commons-codec-*.jar" />
+
+		<include name="lib/ajt-*.jar" />
 
 
 
-        <include name="lib_compile/scala-2.11.8/scala-library.jar" />
-    </fileset>
+		<include name="lib_compile/scala-library-2.12.3.jar" />
+	</fileset>
 
-    <!-- Code below should not be changed -->
+	<!-- Code below should not be changed -->
 
-    <property
-        name="version"
-        value="development" />
+	<property name="version" value="development" />
 
-    <property
-        name="build"
-        value="build" />
+	<property name="build" value="build" />
 
-    <property
-        name="dist"
-        value="${project}-${version}" />
+	<property name="dist" value="${project}-${version}" />
 
-    <property
-        name="jar"
-        value="${project}.jar" />
+	<property name="jar" value="${project}.jar" />
 
-    <path id="build.classpath" >
+	<path id="build.classpath">
 
-        <fileset refid="jarfiles" />
-    </path>
+		<fileset refid="jarfiles" />
+	</path>
 
-    <echo message="${toString:build.classpath}" />
+	<echo message="${toString:build.classpath}" />
 
-    <pathconvert
-        pathsep=" "
-        property="manifest.classpath" >
+	<pathconvert pathsep=" " property="manifest.classpath">
 
-        <path refid="build.classpath" />
+		<path refid="build.classpath" />
 
-        <mapper>
+		<mapper>
 
-            <chainedmapper>
+			<chainedmapper>
 
-                <flattenmapper />
+				<flattenmapper />
 
-                <globmapper
-                    from="*.jar"
-                    to="*.jar" />
-            </chainedmapper>
-        </mapper>
-    </pathconvert>
+				<globmapper from="*.jar" to="*.jar" />
+			</chainedmapper>
+		</mapper>
+	</pathconvert>
 
-    <echo message="${manifest.classpath}" />
+	<echo message="${manifest.classpath}" />
 
-    <target name="dist" >
+	<target name="dist">
 
-        <!-- Define scala compiler task -->
+		<!-- Define scala compiler task -->
 
-        <taskdef resource="scala/tools/ant/antlib.xml" >
+		<taskdef resource="scala/tools/ant/antlib.xml">
 
-            <classpath>
+			<classpath>
 
-                <fileset refid="jarfiles" />
+				<fileset refid="jarfiles" />
 
-                <fileset dir="lib_compile/" >
+				<fileset dir="lib_compile/">
 
-                    <include name="**/*.jar" />
-                </fileset>
-            </classpath>
-        </taskdef>
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</taskdef>
 
-        <delete
-            dir="${build}"
-            failonerror="false" />
+		<delete dir="${build}" failonerror="false" />
 
-        <delete
-            dir="${dist}"
-            failonerror="false" />
+		<delete dir="${dist}" failonerror="false" />
 
-        <mkdir dir="${build}" />
+		<mkdir dir="${build}" />
 
-        <mkdir dir="${dist}" />
+		<mkdir dir="${dist}" />
 
-        <copy
-            flatten="true"
-            todir="${dist}/" >
+		
+		<propertyfile file="${build}/tool.properties">
 
-            <fileset refid="jarfiles" />
-        </copy>
+			<entry key="program" value="${project}" />
 
-        <propertyfile file="${build}/tool.properties" >
+			<entry key="version" value="${version}" />
+		</propertyfile>
 
-            <entry
-                key="program"
-                value="${project}" />
+		<scalac destdir="${build}" excludes="junit/**" srcdir="${src}">
 
-            <entry
-                key="version"
-                value="${version}" />
-        </propertyfile>
+			<classpath path="${toString:build.classpath}">
+			</classpath>
+		</scalac>
 
-        <scalac
-            destdir="${build}"
-            excludes="junit/**"
-            srcdir="${src}" >
+		<javac debug="true" debuglevel="lines,vars,source" destdir="${build}" excludes="junit/*.java" source="1.6" srcdir="${src}" target="1.6">
 
-            <classpath path="${toString:build.classpath}" >
-            </classpath>
-        </scalac>
+			<classpath path="${toString:build.classpath}">
+			</classpath>
+		</javac>
 
-        <javac
-            debug="true"
-            debuglevel="lines,vars,source"
-            destdir="${build}"
-            excludes="junit/*.java"
-            source="1.6"
-            srcdir="${src}"
-            target="1.6" >
+		<copy todir="${build}/">
 
-            <classpath path="${toString:build.classpath}" >
-            </classpath>
-        </javac>
-
-    	<copy todir="${build}/">
-
-    	  	<fileset dir="resources">
-	
-    			<include name="*.txt" />
+			<fileset dir="resources">
+				<include name="*.md" />
+				<include name="*.txt" />
 			</fileset>
 		</copy>
-    	
-        <jar
-            basedir="${build}"
-            destfile="${dist}/${jar}" >
 
-            <manifest>
 
-                <attribute
-                    name="Main-Class"
-                    value="${manifest.mainClass}" />
+		<jar destfile="${dist}/${jar}" basedir="${build}">
+			<zipgroupfileset dir="lib/" includes="*.jar" />
+			<zipgroupfileset dir="lib/processing-2.0.3/" includes="*.jar" />
+			<zipgroupfileset dir="lib_compile/" includes="scala-library-*.jar" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="${manifest.mainClass}" />
 
-                <attribute
-                    name="Class-Path"
-                    value="${manifest.classpath}" />
-            </manifest>
-        </jar>
+			</manifest>
+		</jar>
 
-        <zip
-            basedir="${dist}"
-            destfile="${dist}.zip" />
 
-        <delete
-            dir="${dist}"
-            failonerror="false" />
 
-        <delete
-            dir="${build}"
-            failonerror="false" />
-    </target>
+
+		<zip basedir="${dist}" destfile="${dist}.zip" />
+
+		<delete dir="${dist}" failonerror="false" />
+
+		<delete dir="${build}" failonerror="false" />
+	</target>
 
 </project>
